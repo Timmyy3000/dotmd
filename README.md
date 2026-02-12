@@ -1,6 +1,6 @@
 # dotmd
 
-A personal blog by [Timi](https://x.com/timithechef) — built entirely by AI agents, with zero human-written code.
+A personal blog by [Timi](https://x.com/timithechef) — built entirely by AI agents, with zero human-written code but 100% human thought. 
 
 Live at [md.timi.click](https://md.timi.click)
 

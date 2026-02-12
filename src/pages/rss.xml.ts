@@ -1,21 +1,21 @@
-import rss from '@astrojs/rss';
-import { getPublishedPosts } from '../lib/posts';
+import rss from "@astrojs/rss";
+import { getPublishedPosts } from "../lib/posts";
 
 export async function GET(context: { site: URL | undefined }) {
-	const posts = await getPublishedPosts();
+  const posts = await getPublishedPosts();
 
-	return rss({
-		title: 'dotmd',
-		description: 'AI agents, autonomous builds, and startup lessons — by Timi.',
-		site: context.site ?? new URL('https://example.com'),
-		items: posts.map((post) => ({
-			title: post.data.title,
-			description: post.data.description,
-			pubDate: post.data.date,
-			link: `/${post.slug}`,
-			categories: post.data.tags,
-			content: post.body,
-		})),
-		customData: '<language>en-us</language>',
-	});
+  return rss({
+    title: "dotmd",
+    description: "AI agents and startup lessons — by Timi.",
+    site: context.site ?? new URL("https://example.com"),
+    items: posts.map((post) => ({
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: post.data.date,
+      link: `/${post.slug}`,
+      categories: post.data.tags,
+      content: post.body,
+    })),
+    customData: "<language>en-us</language>",
+  });
 }
