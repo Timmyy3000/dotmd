@@ -11,10 +11,14 @@ interface Props {
 	title: string;
 	description: string;
 	canonicalPath?: string;
+	image?: string;
 }
 
-const { title, description, canonicalPath = '/' } = Astro.props;
+const { title, description, canonicalPath = '/', image } = Astro.props;
 const canonicalUrl = Astro.site ? new URL(canonicalPath, Astro.site).toString() : undefined;
+const ogImage = image
+	? (Astro.site ? new URL(image, Astro.site).toString() : image)
+	: (Astro.site ? new URL('/md-icon.png', Astro.site).toString() : '/md-icon.png');
 const pathname = Astro.url.pathname;
 const pageKind = pathname === '/' ? 'feed' : pathname.startsWith('/blog') ? 'index' : 'post';
 ---
@@ -36,6 +40,22 @@ const pageKind = pathname === '/' ? 'feed' : pathname.startsWith('/blog') ? 'ind
 		<meta name="description" content={description} />
 		<meta name="generator" content={Astro.generator} />
 		{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+		<link rel="icon" href="/md-icon.ico" sizes="any" />
+		<link rel="icon" type="image/png" href="/md-icon.png" />
+		<!-- Open Graph -->
+		<meta property="og:type" content={canonicalPath === '/' ? 'website' : 'article'} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		{canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+		<meta property="og:site_name" content="dotmd" />
+		<!-- Twitter / X -->
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:site" content="@timithechef" />
+		<meta name="twitter:creator" content="@timithechef" />
 		<title>{title}</title>
 	</head>
 	<body data-app-page={pageKind}>
@@ -52,7 +72,7 @@ const pageKind = pathname === '/' ? 'feed' : pathname.startsWith('/blog') ? 'ind
 				<slot />
 			</main>
 			<footer class="site-footer">
-				<p>Markdown in, everything out.</p>
+				<p>Written by <a href="https://x.com/timithechef" target="_blank" rel="noreferrer">Timi</a>. Built entirely by AI agents. Zero human code.</p>
 			</footer>
 		</div>
 		<ThemePicker />
