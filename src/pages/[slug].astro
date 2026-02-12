@@ -17,10 +17,17 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 ---
 
 <BaseLayout
-	title={`${post.data.title} | dotmd`}
+	title={`${post.data.title} | dot md`}
 	description={post.data.description}
 	canonicalPath={canonicalUrl}
+	image={post.data.coverImage ? (post.data.coverImage.startsWith('/') ? post.data.coverImage : `/${post.data.coverImage}`) : undefined}
 >
+	<nav class="post-controls post-controls-external" aria-label="Post utilities">
+		<a href={`/${post.slug}.llm.txt`}>Plain text</a>
+		<a href="/rss.xml">RSS</a>
+		<a href="/blog">All posts</a>
+	</nav>
+
 	<article class="post-shell">
 		<p class="post-meta">
 			<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
@@ -28,6 +35,14 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 		</p>
 		<h1>{post.data.title}</h1>
 		<p>{post.data.description}</p>
+		{post.data.coverImage && (
+			<img
+				class="post-cover"
+				src={post.data.coverImage.startsWith('/') ? post.data.coverImage : `/${post.data.coverImage}`}
+				alt={post.data.coverAlt ?? ''}
+				loading="eager"
+			/>
+		)}
 		{post.data.tags.length > 0 && (
 			<ul class="tag-list" aria-label="Tags">
 				{post.data.tags.map((tag) => (
@@ -35,11 +50,6 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 				))}
 			</ul>
 		)}
-		<div class="post-controls">
-			<a href={`/${post.slug}.llm.txt`}>Plain text</a>
-			<a href="/rss.xml">RSS</a>
-			<a href="/blog">All posts</a>
-		</div>
 		<div class="post-content">
 			<Content />
 		</div>
