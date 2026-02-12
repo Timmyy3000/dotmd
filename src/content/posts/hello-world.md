@@ -4,7 +4,7 @@ description: "My first real stab at a serious blog — journaling experiments, A
 date: 2026-02-12
 slug: "hello-world"
 tags: ["thoughts", "ai"]
-coverImage: "/images/1.png"
+coverImage: "/images/hello-world/1.png"
 draft: false
 ---
 Of course I use AI to write, get off my back.  
