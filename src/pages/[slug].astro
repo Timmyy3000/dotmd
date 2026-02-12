@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDate, getPublishedPosts, type PostEntry } from '../lib/posts';
+
+export async function getStaticPaths() {
+	const posts = await getPublishedPosts();
+
+	return posts.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
+	}));
+}
+
+const { post } = Astro.props as { post: PostEntry };
+const { Content } = await post.render();
+const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
+---
+
+<BaseLayout
+	title={`${post.data.title} | dotmd`}
+	description={post.data.description}
+	canonicalPath={canonicalUrl}
+>
+	<article class="post-shell">
+		<p class="post-meta">
+			<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+			{post.data.updated && <span>Updated {formatDate(post.data.updated)}</span>}
+		</p>
+		<h1>{post.data.title}</h1>
+		<p>{post.data.description}</p>
+		{post.data.tags.length > 0 && (
+			<ul class="tag-list" aria-label="Tags">
+				{post.data.tags.map((tag) => (
+					<li>{tag}</li>
+				))}
+			</ul>
+		)}
+		<div class="post-controls">
+			<a href={`/${post.slug}.llm.txt`}>Plain text</a>
+			<a href="/rss.xml">RSS</a>
+			<a href="/blog">All posts</a>
+		</div>
+		<div class="post-content">
+			<Content />
+		</div>
+	</article>
+</BaseLayout>

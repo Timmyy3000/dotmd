@@ -1,0 +1,178 @@
+---
+import { formatDate, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>dotmd Feed Concept 7 | CRT Terminal</title>
+		<meta name="description" content="Feed concept 7: retro terminal operating screen." />
+		<style is:global>
+			@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+
+			:root {
+				--bg: #07120a;
+				--panel: #0b1f11;
+				--line: #1dd166;
+				--soft: #86f3ae;
+				--warn: #ffd34f;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				min-height: 100vh;
+				background: var(--bg);
+				color: var(--soft);
+				font-family: 'Share Tech Mono', monospace;
+				text-shadow: 0 0 10px #3aff7f55;
+			}
+			body::before {
+				content: '';
+				position: fixed;
+				inset: 0;
+				background: repeating-linear-gradient(to bottom, #0000 0, #0000 2px, #00000022 3px, #00000022 4px);
+				pointer-events: none;
+				mix-blend-mode: multiply;
+			}
+			.shell {
+				width: min(1100px, calc(100vw - 1.4rem));
+				margin: 0.8rem auto 2rem;
+				border: 1px solid #2dd87166;
+				background: #08170dcc;
+				box-shadow: 0 0 0 1px #0f2d18 inset, 0 0 40px #14bf4f33;
+			}
+			.head {
+				padding: 0.8rem;
+				border-bottom: 1px solid #2dd87155;
+			}
+			.head h1 {
+				margin: 0;
+				font: 400 clamp(2rem, 8vw, 5rem) / 0.9 'VT323', monospace;
+				color: var(--line);
+				letter-spacing: 0.04em;
+			}
+			.boot {
+				margin: 0.5rem 0 0;
+				color: #a7efbf;
+				font-size: 0.88rem;
+			}
+			.boot::before {
+				content: '> ';
+				color: var(--warn);
+			}
+			.switch {
+				display: flex;
+				gap: 0.45rem;
+				flex-wrap: wrap;
+				margin-top: 0.6rem;
+			}
+			.switch a {
+				text-decoration: none;
+				color: #9bebbb;
+				border: 1px solid #2dd87155;
+				padding: 0.16rem 0.45rem;
+				font-size: 0.74rem;
+			}
+			.switch a.active {
+				background: var(--line);
+				color: #052510;
+				font-weight: 700;
+			}
+			.feed {
+				padding: 0.8rem;
+				display: grid;
+				gap: 0.7rem;
+			}
+			.row {
+				border: 1px solid #2dd8714f;
+				background: var(--panel);
+				padding: 0.7rem;
+				display: grid;
+				grid-template-columns: 110px 1fr auto;
+				gap: 0.7rem;
+				align-items: start;
+				animation: linein 380ms steps(12) both;
+			}
+			.row:nth-child(2) {
+				animation-delay: 80ms;
+			}
+			.row:nth-child(3) {
+				animation-delay: 160ms;
+			}
+			.row:nth-child(4) {
+				animation-delay: 240ms;
+			}
+			.row:nth-child(5) {
+				animation-delay: 320ms;
+			}
+			.row time {
+				color: var(--warn);
+				font-size: 0.76rem;
+			}
+			.row h2 {
+				margin: 0;
+				font: 400 clamp(1.25rem, 3.8vw, 2rem) / 0.95 'VT323', monospace;
+				color: var(--line);
+			}
+			.row p {
+				margin: 0.3rem 0 0;
+				font-size: 0.9rem;
+			}
+			.row a {
+				text-decoration: none;
+				color: #03280f;
+				background: var(--line);
+				padding: 0.22rem 0.46rem;
+				font-size: 0.8rem;
+				font-weight: 700;
+			}
+			@keyframes linein {
+				from {
+					opacity: 0;
+					filter: brightness(1.8);
+				}
+				to {
+					opacity: 1;
+					filter: none;
+				}
+			}
+			@media (max-width: 760px) {
+				.row {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="shell">
+			<header class="head">
+				<h1>DOTMD.OS FEED</h1>
+				<p class="boot">Boot completed. Displaying latest article packets.</p>
+				<nav class="switch" aria-label="Design routes">
+					<a href="/1">01</a><a href="/2">02</a><a href="/3">03</a><a href="/4">04</a><a href="/5">05</a>
+					<a href="/6">06</a><a class="active" href="/7">07</a><a href="/8">08</a><a href="/9">09</a><a href="/10">10</a>
+				</nav>
+			</header>
+			<main class="feed">
+				{
+					posts.map((post) => (
+						<article class="row">
+							<time>{formatDate(post.data.date)}</time>
+							<div>
+								<h2>{post.data.title}</h2>
+								<p>{post.data.description}</p>
+							</div>
+							<a href={`/${post.slug}`}>OPEN</a>
+						</article>
+					))
+				}
+			</main>
+		</div>
+	</body>
+</html>

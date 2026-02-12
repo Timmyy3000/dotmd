@@ -1,0 +1,221 @@
+---
+import { formatDate, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>dotmd Feed Concept 4 | Deco Noir</title>
+		<meta name="description" content="Feed concept 4: art-deco inspired luxe newsroom." />
+		<style is:global>
+			@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap');
+
+			:root {
+				--bg: #0f0f12;
+				--gold: #d9b86e;
+				--gold-soft: #9f8248;
+				--ink: #f1e7cc;
+				--muted: #b5a681;
+				--panel: #141418;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				background:
+					radial-gradient(circle at 50% -20%, #6a552733 0%, transparent 65%),
+					var(--bg);
+				color: var(--ink);
+				font-family: 'Source Sans 3', sans-serif;
+				min-height: 100vh;
+			}
+
+			.frame {
+				width: min(980px, calc(100vw - 1.8rem));
+				margin: 1rem auto 3rem;
+				border: 1px solid #7b643633;
+				background: linear-gradient(170deg, #151519, #101013);
+				padding: 1.2rem;
+				position: relative;
+			}
+
+			.frame::before,
+			.frame::after {
+				content: '';
+				position: absolute;
+				inset: 10px;
+				border: 1px solid #7b643333;
+				pointer-events: none;
+			}
+
+			.frame::after {
+				inset: 18px;
+			}
+
+			.top {
+				text-align: center;
+				padding: 1rem 1rem 1.2rem;
+				border-bottom: 1px solid #7b643347;
+			}
+
+			h1 {
+				font-family: 'Cinzel', serif;
+				font-size: clamp(2rem, 6vw, 4.8rem);
+				letter-spacing: 0.05em;
+				margin: 0;
+				text-transform: uppercase;
+				color: var(--gold);
+			}
+
+			.top p {
+				margin: 0.7rem auto 0;
+				max-width: 60ch;
+				color: var(--muted);
+			}
+
+			.switcher {
+				margin-top: 0.9rem;
+				display: flex;
+				gap: 0.45rem;
+				justify-content: center;
+				flex-wrap: wrap;
+			}
+
+			.switcher a {
+				text-decoration: none;
+				color: var(--muted);
+				border: 1px solid #7b64335c;
+				padding: 0.33rem 0.58rem;
+				font: 600 0.78rem/1 'Source Sans 3', sans-serif;
+				letter-spacing: 0.09em;
+			}
+
+			.switcher a.active {
+				background: var(--gold);
+				border-color: transparent;
+				color: #181818;
+			}
+
+			.feed {
+				padding: 1.1rem 0.8rem 0.2rem;
+				display: grid;
+				gap: 0.7rem;
+			}
+
+			.item {
+				background: var(--panel);
+				border: 1px solid #7b643340;
+				padding: 0.9rem;
+				display: grid;
+				grid-template-columns: auto 1fr auto;
+				gap: 0.8rem;
+				align-items: center;
+				position: relative;
+				animation: rise 600ms ease both;
+			}
+
+			.item:nth-child(2) {
+				animation-delay: 90ms;
+			}
+			.item:nth-child(3) {
+				animation-delay: 180ms;
+			}
+			.item:nth-child(4) {
+				animation-delay: 270ms;
+			}
+			.item:nth-child(5) {
+				animation-delay: 360ms;
+			}
+
+			.item::before {
+				content: '◆';
+				color: var(--gold-soft);
+				font-size: 0.7rem;
+			}
+
+			.item h2 {
+				margin: 0;
+				font: 600 clamp(1.05rem, 2.7vw, 1.4rem) / 1.15 'Cinzel', serif;
+				color: var(--ink);
+				letter-spacing: 0.01em;
+			}
+
+			.item p {
+				margin: 0.2rem 0 0;
+				color: var(--muted);
+			}
+
+			.item time {
+				font-size: 0.8rem;
+				color: var(--gold-soft);
+				text-transform: uppercase;
+				letter-spacing: 0.09em;
+				justify-self: end;
+			}
+
+			.item a {
+				position: absolute;
+				inset: 0;
+				text-indent: -9999px;
+			}
+
+			@keyframes rise {
+				from {
+					opacity: 0;
+					transform: translateY(14px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			@media (max-width: 760px) {
+				.item {
+					grid-template-columns: 1fr;
+					padding: 1rem 0.9rem 1.1rem;
+				}
+
+				.item time {
+					justify-self: start;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="frame">
+			<header class="top">
+				<h1>Noir Bulletin</h1>
+				<p>Art-deco framing, gold geometry, and structured hierarchy for a luxurious feed treatment.</p>
+				<nav class="switcher" aria-label="Design concepts">
+					<a href="/1">01</a>
+					<a href="/2">02</a>
+					<a href="/3">03</a>
+					<a class="active" href="/4">04</a>
+					<a href="/5">05</a>
+				</nav>
+			</header>
+			<main class="feed">
+				{
+					posts.map((post) => (
+						<article class="item">
+							<div>
+								<h2>{post.data.title}</h2>
+								<p>{post.data.description}</p>
+							</div>
+							<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+							<a href={`/${post.slug}`}>Open {post.data.title}</a>
+						</article>
+					))
+				}
+			</main>
+		</div>
+	</body>
+</html>

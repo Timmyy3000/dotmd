@@ -1,0 +1,62 @@
+---
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { formatDate, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>dotmd Feed Concept 20 | Solarpunk Canopy</title>
+		<style is:global>
+			@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@500;700&family=Merriweather:wght@400;700&display=swap');
+			:root { --bg:#edf7e8; --ink:#223321; --muted:#547152; --card:#f8fff5; --line:#bcd6b5; --accent:#2f9d5f; }
+			:root[data-theme='dark'] { --bg:#0f1913; --ink:#e7f4e7; --muted:#9cc29d; --card:#18261d; --line:#355243; --accent:#7ceb9f; }
+			*{box-sizing:border-box}
+			body{margin:0;font-family:'Merriweather',serif;color:var(--ink);background:radial-gradient(900px 340px at 20% -10%,#b6f7c060,transparent 65%),radial-gradient(750px 300px at 90% 10%,#d7ffc580,transparent 65%),var(--bg)}
+			.page{width:min(1120px,calc(100vw - 2rem));margin:1rem auto 3rem}
+			.head{padding:1rem;border:1px solid var(--line);background:var(--card);border-radius:1.2rem}
+			h1{margin:0;font:700 clamp(2.2rem,8vw,5.2rem)/.88 'Alegreya Sans SC',sans-serif;text-transform:uppercase;color:var(--accent)}
+			.head p{margin:.5rem 0 0;color:var(--muted);max-width:62ch}
+			.controls{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.72rem}
+			.theme-toggle{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:.3rem .56rem;border-radius:999px;cursor:pointer}
+			.nav{display:flex;gap:.32rem;flex-wrap:wrap}
+			.nav a{text-decoration:none;color:var(--muted);padding:.2rem .45rem;border-radius:999px;border:1px solid transparent;font-size:.74rem}
+			.nav a.active{border-color:var(--line);color:var(--ink);background:var(--card)}
+			.feed{margin-top:.95rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem}
+			.card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:.9rem;position:relative;overflow:hidden}
+			.card::before{content:'';position:absolute;inset:auto -40px -48px auto;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#4cca7a44,transparent 70%);pointer-events:none}
+			.card time{font-size:.76rem;color:var(--accent);font-family:'Alegreya Sans SC',sans-serif;letter-spacing:.08em}
+			.card h2{margin:.45rem 0 .35rem;font:700 clamp(1.2rem,3vw,1.72rem)/1.08 'Alegreya Sans SC',sans-serif}
+			.card p{margin:0;color:var(--muted);font-size:.95rem}
+			.card a{display:inline-block;margin-top:.68rem;color:var(--accent);font-weight:700;text-decoration:none}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<header class="head">
+				<h1>Solarpunk Canopy Feed</h1>
+				<p>Optimistic ecological palette with soft botanical atmospherics and grounded editorial clarity.</p>
+				<div class="controls">
+					<ThemeToggle storageKey="dotmd-theme-20" />
+					<nav class="nav" aria-label="Concept routes">
+						<a href="/11">11</a><a href="/12">12</a><a href="/13">13</a><a href="/14">14</a><a href="/15">15</a><a href="/16">16</a><a href="/17">17</a><a href="/18">18</a><a href="/19">19</a><a class="active" href="/20">20</a>
+					</nav>
+				</div>
+			</header>
+			<main class="feed">
+				{posts.map((post) => (
+					<article class="card">
+						<time>{formatDate(post.data.date)}</time>
+						<h2>{post.data.title}</h2>
+						<p>{post.data.description}</p>
+						<a href={`/${post.slug}`}>Read leaf</a>
+					</article>
+				))}
+			</main>
+		</div>
+	</body>
+</html>

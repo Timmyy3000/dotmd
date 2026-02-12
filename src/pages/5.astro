@@ -1,0 +1,268 @@
+---
+import { formatDate, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>dotmd Feed Concept 5 | Candy Pop</title>
+		<meta name="description" content="Feed concept 5: playful Y2K candy pop interface." />
+		<style is:global>
+			@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@500;700;800&display=swap');
+
+			:root {
+				--bg1: #ffebd2;
+				--bg2: #ffd7f6;
+				--bg3: #d0f5ff;
+				--ink: #202038;
+				--hot: #ff3d81;
+				--blue: #1f7aff;
+				--mint: #00bfa7;
+				--card: #ffffffcc;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				font-family: 'Nunito', sans-serif;
+				color: var(--ink);
+				background:
+					radial-gradient(600px 300px at 90% -5%, #fff7, transparent 70%),
+					radial-gradient(800px 400px at -10% 100%, #fff8, transparent 70%),
+					linear-gradient(120deg, var(--bg1), var(--bg2), var(--bg3));
+				min-height: 100vh;
+			}
+
+			.board {
+				width: min(1180px, calc(100vw - 2rem));
+				margin: 1rem auto 3rem;
+			}
+
+			.titlebox {
+				background: #ffffffa8;
+				backdrop-filter: blur(8px);
+				border: 2px solid #ffffff;
+				border-radius: 1.4rem;
+				padding: 1rem;
+				box-shadow: 0 24px 30px #40104920;
+				position: relative;
+			}
+
+			.titlebox h1 {
+				font-family: 'Baloo 2', cursive;
+				font-size: clamp(2.3rem, 7vw, 5rem);
+				line-height: 0.94;
+				margin: 0;
+				color: var(--hot);
+				text-shadow: 3px 3px 0 #ffffff;
+			}
+
+			.titlebox p {
+				margin: 0.5rem 0 0;
+				max-width: 65ch;
+				font-size: 1.04rem;
+			}
+
+			.stickers {
+				position: absolute;
+				right: 1rem;
+				top: -0.8rem;
+				display: flex;
+				gap: 0.45rem;
+				flex-wrap: wrap;
+				justify-content: flex-end;
+			}
+
+			.stickers span {
+				font: 800 0.72rem/1 'Nunito', sans-serif;
+				letter-spacing: 0.06em;
+				padding: 0.3rem 0.52rem;
+				border-radius: 999px;
+				color: #fff;
+				transform: rotate(-6deg);
+			}
+
+			.stickers span:nth-child(1) {
+				background: var(--blue);
+			}
+			.stickers span:nth-child(2) {
+				background: var(--hot);
+				transform: rotate(4deg);
+			}
+			.stickers span:nth-child(3) {
+				background: var(--mint);
+				transform: rotate(-3deg);
+			}
+
+			.switcher {
+				margin-top: 0.9rem;
+				display: flex;
+				gap: 0.55rem;
+				flex-wrap: wrap;
+			}
+
+			.switcher a {
+				text-decoration: none;
+				font-weight: 800;
+				font-size: 0.76rem;
+				letter-spacing: 0.08em;
+				border-radius: 999px;
+				padding: 0.35rem 0.62rem;
+				background: #fff;
+				border: 2px solid #fff;
+				color: var(--ink);
+			}
+
+			.switcher a.active {
+				color: #fff;
+				background: var(--hot);
+			}
+
+			.feed {
+				margin-top: 1rem;
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+				gap: 0.95rem;
+			}
+
+			.post {
+				background: var(--card);
+				border: 2px solid #fff;
+				border-radius: 1.15rem;
+				padding: 0.9rem;
+				box-shadow: 0 16px 18px #4010491f;
+				position: relative;
+				animation: bouncein 600ms cubic-bezier(0.2, 1, 0.2, 1) both;
+			}
+
+			.post:nth-child(odd) {
+				transform: rotate(-0.9deg);
+			}
+
+			.post:nth-child(even) {
+				transform: rotate(0.9deg);
+			}
+
+			.post:nth-child(2) {
+				animation-delay: 70ms;
+			}
+			.post:nth-child(3) {
+				animation-delay: 140ms;
+			}
+			.post:nth-child(4) {
+				animation-delay: 210ms;
+			}
+			.post:nth-child(5) {
+				animation-delay: 280ms;
+			}
+
+			.post::before {
+				content: '';
+				position: absolute;
+				inset: -2px;
+				border-radius: inherit;
+				padding: 2px;
+				background: linear-gradient(120deg, #ffffff, #ffffff00);
+				-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+				mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+				-webkit-mask-composite: xor;
+				mask-composite: exclude;
+				pointer-events: none;
+			}
+
+			.post time {
+				color: var(--blue);
+				font-size: 0.8rem;
+				font-weight: 800;
+				letter-spacing: 0.04em;
+			}
+
+			.post h2 {
+				font-family: 'Baloo 2', cursive;
+				font-size: clamp(1.35rem, 3vw, 1.85rem);
+				margin: 0.45rem 0 0.42rem;
+				line-height: 1.06;
+			}
+
+			.post p {
+				margin: 0;
+				color: #3d3f60;
+			}
+
+			.post a {
+				display: inline-block;
+				margin-top: 0.7rem;
+				text-decoration: none;
+				background: var(--blue);
+				color: #fff;
+				padding: 0.34rem 0.58rem;
+				border-radius: 0.55rem;
+				font-weight: 800;
+				font-size: 0.84rem;
+			}
+
+			@keyframes bouncein {
+				from {
+					opacity: 0;
+					transform: translateY(20px) scale(0.95);
+				}
+				70% {
+					opacity: 1;
+					transform: translateY(-3px) scale(1.02);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0) scale(1);
+				}
+			}
+
+			@media (max-width: 640px) {
+				.stickers {
+					position: static;
+					margin-top: 0.7rem;
+					justify-content: flex-start;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="board">
+			<header class="titlebox">
+				<div class="stickers">
+					<span>POP FEED</span>
+					<span>FRESH DROP</span>
+					<span>DOTMD</span>
+				</div>
+				<h1>Candy Feed Club</h1>
+				<p>Playful Y2K-inspired composition with sticker labels, soft glass cards, and animated bounce rhythm.</p>
+				<nav class="switcher" aria-label="Design concepts">
+					<a href="/1">01</a>
+					<a href="/2">02</a>
+					<a href="/3">03</a>
+					<a href="/4">04</a>
+					<a class="active" href="/5">05</a>
+				</nav>
+			</header>
+
+			<main class="feed">
+				{
+					posts.map((post) => (
+						<article class="post">
+							<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+							<h2>{post.data.title}</h2>
+							<p>{post.data.description}</p>
+							<a href={`/${post.slug}`}>Open post</a>
+						</article>
+					))
+				}
+			</main>
+		</div>
+	</body>
+</html>

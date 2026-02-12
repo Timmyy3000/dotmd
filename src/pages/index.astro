@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout title="dotmd" description="A markdown-first blog built entirely by AI. New writing for humans, readers, and machines." canonicalPath="/">
+	<section class="intro-panel">
+		<h1>Latest</h1>
+		<p>
+			New writing appears here first. Browse the full archive or subscribe via RSS.
+		</p>
+		<p class="vibe-disclaimer">Built entirely by Codex and Claude.</p>
+	</section>
+
+	<section class="feed" aria-label="Post feed">
+		{
+			posts.length === 0 ? (
+				<p>Nothing here yet — the first post is on its way.</p>
+			) : (
+				posts.map((post) => <PostCard post={post} />)
+			)
+		}
+	</section>
+</BaseLayout>

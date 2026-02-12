@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, getPublishedPosts } from '../../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout
+	title="dotmd — Archive"
+	description="The complete archive of every dotmd article."
+	canonicalPath="/blog"
+>
+	<section class="intro-panel">
+		<h1 class="page-title">Archive</h1>
+		<p class="page-description">Every post, newest first.</p>
+	</section>
+
+	<section class="index-grid" aria-label="Blog index">
+		{
+			posts.length === 0 ? (
+				<p>No posts found.</p>
+			) : (
+				posts.map((post) => (
+					<article class="index-item">
+						<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+						<a href={`/${post.slug}`}>{post.data.title}</a>
+						<p>{post.data.description}</p>
+					</article>
+				))
+			)
+		}
+	</section>
+</BaseLayout>

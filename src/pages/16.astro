@@ -1,0 +1,61 @@
+---
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { formatDate, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>dotmd Feed Concept 16 | Soft Clay</title>
+		<style is:global>
+			@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap');
+			:root { --bg:#ede9ff; --panel:#f8f6ff; --ink:#2a2141; --muted:#6d6389; --accent:#7a5cff; --shadow:10px 10px 24px #b9b2d4, -10px -10px 24px #ffffff; }
+			:root[data-theme='dark'] { --bg:#1a1630; --panel:#221c3b; --ink:#f2eeff; --muted:#b2a9ce; --accent:#c2a6ff; --shadow:10px 10px 24px #0f0d1d, -10px -10px 24px #2b2450; }
+			*{box-sizing:border-box}
+			body{margin:0;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink)}
+			.frame{width:min(1120px,calc(100vw - 2rem));margin:1rem auto 3rem}
+			.hero{padding:1rem;border-radius:24px;background:var(--panel);box-shadow:var(--shadow)}
+			h1{margin:0;font:700 clamp(2.2rem,7vw,4.8rem)/.9 'Baloo 2',cursive;color:var(--accent)}
+			.hero p{margin:.55rem 0 0;color:var(--muted)}
+			.row{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.7rem}
+			.theme-toggle{border:none;border-radius:999px;background:var(--bg);color:var(--ink);padding:.35rem .62rem;box-shadow:var(--shadow);cursor:pointer}
+			.nav{display:flex;gap:.3rem;flex-wrap:wrap}
+			.nav a{text-decoration:none;color:var(--muted);padding:.25rem .5rem;border-radius:999px;background:var(--panel);box-shadow:var(--shadow);font-size:.74rem}
+			.nav a.active{color:#fff;background:var(--accent)}
+			.feed{margin-top:1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.8rem}
+			.card{padding:.85rem;border-radius:20px;background:var(--panel);box-shadow:var(--shadow)}
+			.card time{font-size:.78rem;color:var(--accent)}
+			.card h2{margin:.42rem 0 .3rem;font:700 clamp(1.2rem,3vw,1.75rem)/1.08 'Baloo 2',cursive}
+			.card p{margin:0;color:var(--muted)}
+			.card a{display:inline-block;margin-top:.68rem;color:var(--accent);font-weight:700;text-decoration:none}
+		</style>
+	</head>
+	<body>
+		<div class="frame">
+			<header class="hero">
+				<h1>Soft Clay Feed</h1>
+				<p>Rounded claymorphism with tactile shadows and playful yet polished card rhythm.</p>
+				<div class="row">
+					<ThemeToggle storageKey="dotmd-theme-16" />
+					<nav class="nav" aria-label="Concept routes">
+						<a href="/11">11</a><a href="/12">12</a><a href="/13">13</a><a href="/14">14</a><a href="/15">15</a><a class="active" href="/16">16</a><a href="/17">17</a><a href="/18">18</a><a href="/19">19</a><a href="/20">20</a>
+					</nav>
+				</div>
+			</header>
+			<main class="feed">
+				{posts.map((post) => (
+					<article class="card">
+						<time>{formatDate(post.data.date)}</time>
+						<h2>{post.data.title}</h2>
+						<p>{post.data.description}</p>
+						<a href={`/${post.slug}`}>Open post</a>
+					</article>
+				))}
+			</main>
+		</div>
+	</body>
+</html>

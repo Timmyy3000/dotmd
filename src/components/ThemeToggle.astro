@@ -1,0 +1,32 @@
+---
+interface Props {
+	storageKey: string;
+	className?: string;
+}
+
+const { storageKey, className = 'theme-toggle' } = Astro.props;
+---
+
+<button class={className} data-storage-key={storageKey} type="button">Toggle Theme</button>
+
+<script is:inline>
+	const button = document.currentScript?.previousElementSibling;
+	if (button instanceof HTMLButtonElement) {
+		const root = document.documentElement;
+		const key = button.dataset.storageKey ?? 'dotmd-theme';
+
+		const applyTheme = (theme) => {
+			root.dataset.theme = theme;
+			button.textContent = theme === 'dark' ? 'Switch to Light' : 'Switch to Dark';
+		};
+
+		const saved = localStorage.getItem(key);
+		applyTheme(saved === 'dark' ? 'dark' : 'light');
+
+		button.addEventListener('click', () => {
+			const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+			localStorage.setItem(key, next);
+			applyTheme(next);
+		});
+	}
+</script>

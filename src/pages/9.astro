@@ -1,0 +1,179 @@
+---
+import { formatDate, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>dotmd Feed Concept 9 | Illuminated Chronicle</title>
+		<meta name="description" content="Feed concept 9: illuminated manuscript inspired layout." />
+		<style is:global>
+			@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cardo:wght@400;700&display=swap');
+			:root {
+				--parchment: #efe3c3;
+				--ink: #2f2016;
+				--ruby: #9f1d20;
+				--gold: #9e7b2f;
+				--line: #b89d64;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				font-family: 'Cardo', serif;
+				color: var(--ink);
+				background:
+					radial-gradient(circle at 20% 20%, #ffffff59, transparent 40%),
+					radial-gradient(circle at 85% 80%, #ffffff4d, transparent 45%),
+					var(--parchment);
+			}
+			.page {
+				width: min(980px, calc(100vw - 1.8rem));
+				margin: 1.2rem auto 3rem;
+				border: 8px double var(--line);
+				padding: 1rem;
+				background: #f6edd2e6;
+				box-shadow: 0 14px 30px #46270033;
+			}
+			.title {
+				text-align: center;
+				padding-bottom: 0.8rem;
+				border-bottom: 2px solid #ab8f57;
+			}
+			h1 {
+				margin: 0;
+				font: 400 clamp(2.4rem, 8vw, 5.8rem) / 0.92 'UnifrakturMaguntia', cursive;
+				color: var(--ruby);
+			}
+			.subtitle {
+				margin: 0.45rem auto 0;
+				max-width: 62ch;
+				font-size: 1.05rem;
+			}
+			.switch {
+				margin-top: 0.8rem;
+				display: flex;
+				gap: 0.45rem;
+				justify-content: center;
+				flex-wrap: wrap;
+			}
+			.switch a {
+				text-decoration: none;
+				font-size: 0.76rem;
+				letter-spacing: 0.09em;
+				text-transform: uppercase;
+				padding: 0.26rem 0.48rem;
+				border: 1px solid #ab8f57;
+				color: #5a3f25;
+				background: #fff7de;
+			}
+			.switch a.active {
+				color: #fff7de;
+				background: var(--ruby);
+				border-color: transparent;
+			}
+			.feed {
+				padding-top: 0.8rem;
+				display: grid;
+				gap: 0.7rem;
+			}
+			.entry {
+				border: 1px solid #b79b62;
+				padding: 0.85rem;
+				background: #fffae8a8;
+				position: relative;
+				animation: ink 520ms ease both;
+			}
+			.entry::before {
+				content: '';
+				position: absolute;
+				width: 14px;
+				height: 14px;
+				border-radius: 50%;
+				background: radial-gradient(circle, var(--gold), #6f5319);
+				left: -8px;
+				top: 14px;
+			}
+			.entry:nth-child(2) {
+				animation-delay: 80ms;
+			}
+			.entry:nth-child(3) {
+				animation-delay: 160ms;
+			}
+			.entry:nth-child(4) {
+				animation-delay: 240ms;
+			}
+			.entry:nth-child(5) {
+				animation-delay: 320ms;
+			}
+			.entry time {
+				font-size: 0.8rem;
+				color: #6a5329;
+				letter-spacing: 0.06em;
+				text-transform: uppercase;
+			}
+			.entry h2 {
+				margin: 0.45rem 0 0.35rem;
+				font-size: clamp(1.5rem, 4vw, 2.3rem);
+				line-height: 1;
+			}
+			.entry h2::first-letter {
+				font-size: 1.5em;
+				color: var(--ruby);
+				font-weight: 700;
+			}
+			.entry p {
+				margin: 0;
+				font-size: 1.02rem;
+			}
+			.entry a {
+				display: inline-block;
+				margin-top: 0.6rem;
+				color: var(--ruby);
+				text-decoration: none;
+				font-weight: 700;
+			}
+			@keyframes ink {
+				from {
+					opacity: 0;
+					filter: blur(1px);
+					transform: translateY(10px);
+				}
+				to {
+					opacity: 1;
+					filter: none;
+					transform: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<header class="title">
+				<h1>Illuminated Chronicle</h1>
+				<p class="subtitle">Parchment texture, gothic masthead, and manuscript-era ornament translated into a modern feed.</p>
+				<nav class="switch" aria-label="Design routes">
+					<a href="/1">01</a><a href="/2">02</a><a href="/3">03</a><a href="/4">04</a><a href="/5">05</a>
+					<a href="/6">06</a><a href="/7">07</a><a href="/8">08</a><a class="active" href="/9">09</a><a href="/10">10</a>
+				</nav>
+			</header>
+			<main class="feed">
+				{
+					posts.map((post) => (
+						<article class="entry">
+							<time>{formatDate(post.data.date)}</time>
+							<h2>{post.data.title}</h2>
+							<p>{post.data.description}</p>
+							<a href={`/${post.slug}`}>Continue reading</a>
+						</article>
+					))
+				}
+			</main>
+		</div>
+	</body>
+</html>

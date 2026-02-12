@@ -1,0 +1,187 @@
+---
+import { formatDate, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>dotmd Feed Concept 6 | Swiss Monolith</title>
+		<meta name="description" content="Feed concept 6: restrained Swiss poster layout." />
+		<style is:global>
+			@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;700&family=Prata&display=swap');
+
+			:root {
+				--paper: #f4f2ee;
+				--ink: #151515;
+				--line: #b2afa7;
+				--accent: #ff4d00;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				font-family: 'Sora', sans-serif;
+				background: var(--paper);
+				color: var(--ink);
+			}
+			.shell {
+				width: min(1200px, calc(100vw - 2.2rem));
+				margin: 1.2rem auto 3rem;
+			}
+			.hero {
+				display: grid;
+				grid-template-columns: 1fr auto;
+				gap: 1rem;
+				align-items: end;
+				padding-bottom: 1.1rem;
+				border-bottom: 1px solid var(--line);
+				margin-bottom: 1.4rem;
+			}
+			h1 {
+				font: 500 clamp(2.8rem, 10vw, 8rem) / 0.88 'Prata', serif;
+				margin: 0;
+				letter-spacing: -0.01em;
+				text-transform: uppercase;
+			}
+			.sub {
+				max-width: 48ch;
+				font-size: 0.95rem;
+				color: #555149;
+				margin: 0.4rem 0 0;
+			}
+			.index {
+				display: grid;
+				gap: 0.25rem;
+				justify-items: end;
+			}
+			.index a {
+				text-decoration: none;
+				color: #6e6a63;
+				font-size: 0.75rem;
+				letter-spacing: 0.09em;
+				text-transform: uppercase;
+			}
+			.index a.active {
+				color: var(--accent);
+				font-weight: 700;
+			}
+			.feed {
+				position: relative;
+				padding-left: 2.2rem;
+				display: grid;
+				gap: 1.1rem;
+			}
+			.feed::before {
+				content: '';
+				position: absolute;
+				left: 0.8rem;
+				top: 0;
+				bottom: 0;
+				width: 1px;
+				background: var(--line);
+			}
+			.item {
+				display: grid;
+				grid-template-columns: 130px 1fr auto;
+				gap: 1rem;
+				align-items: baseline;
+				padding-bottom: 1rem;
+				border-bottom: 1px solid #d8d5cc;
+				animation: reveal 550ms ease both;
+			}
+			.item:nth-child(2) {
+				animation-delay: 90ms;
+			}
+			.item:nth-child(3) {
+				animation-delay: 170ms;
+			}
+			.item:nth-child(4) {
+				animation-delay: 240ms;
+			}
+			.item:nth-child(5) {
+				animation-delay: 320ms;
+			}
+			.item time {
+				font-size: 0.73rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: #6f6a60;
+			}
+			.item h2 {
+				margin: 0;
+				font-size: clamp(1.25rem, 3vw, 2rem);
+				line-height: 1.04;
+				letter-spacing: -0.01em;
+				text-transform: uppercase;
+				max-width: 24ch;
+			}
+			.item p {
+				margin: 0.35rem 0 0;
+				max-width: 52ch;
+				color: #59554d;
+			}
+			.item a {
+				text-decoration: none;
+				color: var(--accent);
+				font-size: 0.8rem;
+				text-transform: uppercase;
+				letter-spacing: 0.09em;
+				font-weight: 700;
+			}
+			@keyframes reveal {
+				from {
+					opacity: 0;
+					transform: translateY(16px);
+				}
+				to {
+					opacity: 1;
+					transform: none;
+				}
+			}
+			@media (max-width: 860px) {
+				.hero {
+					grid-template-columns: 1fr;
+				}
+				.index {
+					justify-items: start;
+				}
+				.item {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="shell">
+			<header class="hero">
+				<div>
+					<h1>Swiss Monolith</h1>
+					<p class="sub">A rigid, reductionist feed with timeline geometry, poster-scale headlines, and deliberate restraint.</p>
+				</div>
+				<nav class="index" aria-label="Design routes">
+					<a href="/1">01</a><a href="/2">02</a><a href="/3">03</a><a href="/4">04</a><a href="/5">05</a>
+					<a class="active" href="/6">06</a><a href="/7">07</a><a href="/8">08</a><a href="/9">09</a><a href="/10">10</a>
+				</nav>
+			</header>
+			<main class="feed">
+				{
+					posts.map((post) => (
+						<article class="item">
+							<time>{formatDate(post.data.date)}</time>
+							<div>
+								<h2>{post.data.title}</h2>
+								<p>{post.data.description}</p>
+							</div>
+							<a href={`/${post.slug}`}>Read</a>
+						</article>
+					))
+				}
+			</main>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,152 @@
+---
+import { DEFAULT_THEME, THEME_DEFINITIONS, THEME_IDS, THEME_STORAGE_KEY } from '../lib/themes';
+
+const defaultName =
+	THEME_DEFINITIONS.find((t) => t.id === DEFAULT_THEME)?.label.replace(/^\d+\s*/, '') ?? '';
+
+function isDarkBg(hex: string): boolean {
+	const c = hex.replace('#', '').slice(0, 6);
+	const r = parseInt(c.substring(0, 2), 16);
+	const g = parseInt(c.substring(2, 4), 16);
+	const b = parseInt(c.substring(4, 6), 16);
+	return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.45;
+}
+---
+
+<details
+	class="theme-picker"
+	data-theme-picker
+	data-storage-key={THEME_STORAGE_KEY}
+	data-default-theme={DEFAULT_THEME}
+	data-theme-ids={THEME_IDS.join(',')}
+>
+	<summary class="tp-trigger">
+		<span class="tp-dots" aria-hidden="true">
+			<span></span><span></span><span></span>
+		</span>
+		<span class="tp-current" data-theme-current>{defaultName}</span>
+	</summary>
+
+	<div class="tp-panel">
+		<div class="tp-head">
+			<p class="tp-title">Atmosphere</p>
+			<button type="button" class="tp-shuffle" data-theme-random>Surprise me</button>
+		</div>
+		<div class="tp-grid" role="list">
+			{
+				THEME_DEFINITIONS.map((theme, i) => {
+					const name = theme.label.replace(/^\d+\s*/, '');
+					const dark = isDarkBg(theme.swatches[0]);
+					return (
+						<button
+							type="button"
+							class="tp-card"
+							data-theme-id={theme.id}
+							aria-pressed={theme.id === DEFAULT_THEME ? 'true' : 'false'}
+							title={theme.description}
+							style={`--i:${i};--p-bg:${theme.swatches[0]};--p-sf:${theme.swatches[1]};--p-ac:${theme.swatches[2]};--p-tx:${dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.18)'}`}
+						>
+							<div class="tp-preview">
+								<div class="tp-preview-card">
+									<span class="tp-preview-line" />
+									<span class="tp-preview-line" />
+									<span class="tp-preview-accent" />
+								</div>
+							</div>
+							<span class="tp-label">{name}</span>
+						</button>
+					);
+				})
+			}
+		</div>
+	</div>
+</details>
+
+<script is:inline>
+	const picker = document.querySelector('[data-theme-picker]');
+	if (picker instanceof HTMLDetailsElement) {
+		const root = document.documentElement;
+		const storageKey = picker.dataset.storageKey || 'dotmd.theme';
+		const defaultTheme = picker.dataset.defaultTheme || 't18';
+		const themeIds = (picker.dataset.themeIds || defaultTheme)
+			.split(',')
+			.map((s) => s.trim())
+			.filter(Boolean);
+		const cards = Array.from(picker.querySelectorAll('[data-theme-id]'));
+		const randomBtn = picker.querySelector('[data-theme-random]');
+		const currentEl = picker.querySelector('[data-theme-current]');
+
+		const read = () => {
+			try {
+				return sessionStorage.getItem(storageKey);
+			} catch {
+				return null;
+			}
+		};
+		const write = (t) => {
+			try {
+				sessionStorage.setItem(storageKey, t);
+			} catch {}
+		};
+		const valid = (t) => themeIds.includes(t);
+
+		const update = (active) => {
+			cards.forEach((c) => {
+				c.setAttribute(
+					'aria-pressed',
+					c.getAttribute('data-theme-id') === active ? 'true' : 'false'
+				);
+			});
+			if (currentEl) {
+				const btn = cards.find((c) => c.getAttribute('data-theme-id') === active);
+				currentEl.textContent = btn?.querySelector('.tp-label')?.textContent || active;
+			}
+		};
+
+		const apply = (theme, persist) => {
+			const t = valid(theme) ? theme : defaultTheme;
+			root.dataset.theme = t;
+			update(t);
+			if (persist) write(t);
+		};
+
+		apply(read() || root.dataset.theme || defaultTheme, false);
+
+		cards.forEach((c) => {
+			c.addEventListener('click', () => {
+				const t = c.getAttribute('data-theme-id');
+				if (t) {
+					apply(t, true);
+					picker.open = false;
+				}
+			});
+		});
+
+		randomBtn?.addEventListener('click', () => {
+			const cur = root.dataset.theme || defaultTheme;
+			const pool =
+				themeIds.length > 1 ? themeIds.filter((t) => t !== cur) : [...themeIds];
+			apply(pool[Math.floor(Math.random() * pool.length)] || defaultTheme, true);
+		});
+
+		picker.addEventListener('toggle', () => {
+			if (picker.open) {
+				const active = picker.querySelector('[aria-pressed="true"]');
+				if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+			}
+		});
+
+		document.addEventListener('click', (e) => {
+			if (picker.open && !picker.contains(e.target)) picker.open = false;
+		});
+
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && picker.open) picker.open = false;
+		});
+
+		window.addEventListener('pageshow', () => {
+			const r = read();
+			if (r) apply(r, false);
+		});
+	}
+</script>

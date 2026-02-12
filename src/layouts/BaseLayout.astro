@@ -1,0 +1,60 @@
+---
+import '@fontsource-variable/manrope';
+import '@fontsource/fraunces/400.css';
+import '@fontsource/fraunces/600.css';
+import '@fontsource/fraunces/700.css';
+import ThemePicker from '../components/ThemePicker.astro';
+import { DEFAULT_THEME, THEME_IDS, THEME_STORAGE_KEY } from '../lib/themes';
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description: string;
+	canonicalPath?: string;
+}
+
+const { title, description, canonicalPath = '/' } = Astro.props;
+const canonicalUrl = Astro.site ? new URL(canonicalPath, Astro.site).toString() : undefined;
+const pathname = Astro.url.pathname;
+const pageKind = pathname === '/' ? 'feed' : pathname.startsWith('/blog') ? 'index' : 'post';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script is:inline define:vars={{ defaultTheme: DEFAULT_THEME, storageKey: THEME_STORAGE_KEY, themeIds: THEME_IDS }}>
+			try {
+				const savedTheme = sessionStorage.getItem(storageKey);
+				const theme = savedTheme && themeIds.includes(savedTheme) ? savedTheme : defaultTheme;
+				document.documentElement.dataset.theme = theme;
+			} catch {
+				document.documentElement.dataset.theme = defaultTheme;
+			}
+		</script>
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+		<title>{title}</title>
+	</head>
+	<body data-app-page={pageKind}>
+		<div class="site-shell">
+			<header class="site-header">
+				<a class="brand" href="/">dotmd</a>
+				<nav aria-label="Main">
+					<a class={pathname === '/' ? 'active' : ''} href="/">Latest</a>
+					<a class={pathname.startsWith('/blog') ? 'active' : ''} href="/blog">Archive</a>
+					<a href="/rss.xml">RSS</a>
+				</nav>
+			</header>
+			<main class="site-main">
+				<slot />
+			</main>
+			<footer class="site-footer">
+				<p>Markdown in, everything out.</p>
+			</footer>
+		</div>
+		<ThemePicker />
+	</body>
+</html>

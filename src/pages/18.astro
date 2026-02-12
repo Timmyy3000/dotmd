@@ -1,0 +1,60 @@
+---
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { formatDate, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>dotmd Feed Concept 18 | Notebook Sketch</title>
+		<style is:global>
+			@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap');
+			:root { --bg:#fbf6ea; --ink:#2a2a2a; --line:#d8d0bd; --accent:#2f6bb2; --muted:#645f52; --card:#fffdf7; }
+			:root[data-theme='dark'] { --bg:#1c1a16; --ink:#f4f1ea; --line:#494439; --accent:#7fb5ff; --muted:#b8b09d; --card:#24211b; }
+			*{box-sizing:border-box}
+			body{margin:0;background:var(--bg);color:var(--ink);font-family:'Source Serif 4',serif}
+			.paper{width:min(980px,calc(100vw - 1.8rem));margin:1rem auto 3rem;padding:1rem;border:1px solid var(--line);background:linear-gradient(to bottom,#0000 0 36px,var(--line) 36px 37px) 0 52px/100% 37px repeat-y,var(--card)}
+			h1{margin:0;font:700 clamp(2.4rem,8vw,5rem)/.9 'Caveat',cursive;color:var(--accent)}
+			.top p{margin:.3rem 0 0;color:var(--muted)}
+			.controls{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.7rem}
+			.theme-toggle{border:1px dashed var(--line);background:var(--card);color:var(--ink);padding:.3rem .55rem;cursor:pointer;font-family:'Caveat',cursive;font-size:1.25rem}
+			.nav{display:flex;gap:.32rem;flex-wrap:wrap}
+			.nav a{text-decoration:none;color:var(--muted);font-size:.74rem;padding:.18rem .42rem;border:1px dashed transparent}
+			.nav a.active{border-color:var(--line);color:var(--ink)}
+			.feed{margin-top:.9rem;display:grid;gap:.75rem}
+			.entry{padding:.35rem .2rem .5rem;border-bottom:1px dashed var(--line)}
+			.entry time{font-size:.76rem;color:var(--accent)}
+			.entry h2{margin:.35rem 0 .25rem;font:700 clamp(1.45rem,3.8vw,2.1rem)/1 'Caveat',cursive}
+			.entry p{margin:0;color:var(--muted)}
+			.entry a{display:inline-block;margin-top:.4rem;text-decoration:none;color:var(--accent);font-weight:600}
+		</style>
+	</head>
+	<body>
+		<div class="paper">
+			<header class="top">
+				<h1>Notebook Sketch Feed</h1>
+				<p>Handwritten personality with ruled-paper structure and editorial notes vibe.</p>
+				<div class="controls">
+					<ThemeToggle storageKey="dotmd-theme-18" />
+					<nav class="nav" aria-label="Concept routes">
+						<a href="/11">11</a><a href="/12">12</a><a href="/13">13</a><a href="/14">14</a><a href="/15">15</a><a href="/16">16</a><a href="/17">17</a><a class="active" href="/18">18</a><a href="/19">19</a><a href="/20">20</a>
+					</nav>
+				</div>
+			</header>
+			<main class="feed">
+				{posts.map((post) => (
+					<article class="entry">
+						<time>{formatDate(post.data.date)}</time>
+						<h2>{post.data.title}</h2>
+						<p>{post.data.description}</p>
+						<a href={`/${post.slug}`}>Read note</a>
+					</article>
+				))}
+			</main>
+		</div>
+	</body>
+</html>
