@@ -29,12 +29,21 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 	</nav>
 
 	<article class="post-shell">
-		<p class="post-meta">
-			<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
-			{post.data.updated && <span>Updated {formatDate(post.data.updated)}</span>}
-		</p>
-		<h1>{post.data.title}</h1>
-		<p>{post.data.description}</p>
+		<header class="post-header">
+			<p class="post-meta">
+				<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+				{post.data.updated && <span>Updated {formatDate(post.data.updated)}</span>}
+			</p>
+			<h1>{post.data.title}</h1>
+			<p class="post-dek">{post.data.description}</p>
+			{post.data.tags.length > 0 && (
+				<ul class="tag-list" aria-label="Tags">
+					{post.data.tags.map((tag) => (
+						<li>{tag}</li>
+					))}
+				</ul>
+			)}
+		</header>
 		{post.data.coverImage && (
 			<img
 				class="post-cover"
@@ -42,13 +51,6 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 				alt={post.data.coverAlt ?? ''}
 				loading="eager"
 			/>
-		)}
-		{post.data.tags.length > 0 && (
-			<ul class="tag-list" aria-label="Tags">
-				{post.data.tags.map((tag) => (
-					<li>{tag}</li>
-				))}
-			</ul>
 		)}
 		<div class="post-content">
 			<Content />
