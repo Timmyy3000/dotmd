@@ -59,22 +59,41 @@ const pageKind = pathname === '/' ? 'feed' : pathname.startsWith('/blog') ? 'ind
 		<title>{title}</title>
 	</head>
 	<body data-app-page={pageKind}>
+		<a class="skip-link" href="#main-content">Skip to content</a>
+		{pageKind === 'post' && <div class="reading-progress" data-reading-progress aria-hidden="true" />}
 		<div class="site-shell">
 			<header class="site-header">
-				<a class="brand" href="/">dotmd</a>
+				<div class="brand-lockup">
+					<a class="brand" href="/">dotmd</a>
+					<span class="brand-note">notes from the edge of the possible</span>
+				</div>
 				<nav aria-label="Main">
-					<a class={pathname === '/' ? 'active' : ''} href="/">Latest</a>
-					<a class={pathname.startsWith('/blog') ? 'active' : ''} href="/blog">Archive</a>
+					<a class={pathname === '/' ? 'active' : ''} aria-current={pathname === '/' ? 'page' : undefined} href="/">Latest</a>
+					<a class={pathname.startsWith('/blog') ? 'active' : ''} aria-current={pathname.startsWith('/blog') ? 'page' : undefined} href="/blog">Archive</a>
 					<a href="/rss.xml">RSS</a>
 				</nav>
 			</header>
-			<main class="site-main">
+			<main id="main-content" class="site-main">
 				<slot />
 			</main>
 			<footer class="site-footer">
-				Just a human chasing the improbable against all odds</p>
+				<p>Just a human chasing the improbable against all odds.</p>
 			</footer>
 		</div>
 		<ThemePicker />
+		{pageKind === 'post' && (
+			<script is:inline>
+				const progress = document.querySelector('[data-reading-progress]');
+				const updateReadingProgress = () => {
+					if (!(progress instanceof HTMLElement)) return;
+					const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+					const percentage = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+					progress.style.setProperty('--reading-progress', `${Math.min(100, Math.max(0, percentage))}%`);
+				};
+				window.addEventListener('scroll', updateReadingProgress, { passive: true });
+				window.addEventListener('resize', updateReadingProgress);
+				updateReadingProgress();
+			</script>
+		)}
 	</body>
 </html>
