@@ -2621,8 +2621,8 @@ a {
 }
 
 .site-header {
-  position: sticky;
-  top: 0.75rem;
+  position: relative;
+  top: auto;
   z-index: 20;
   border-color: color-mix(in srgb, var(--surface-border) 72%, transparent);
 }
@@ -2761,15 +2761,62 @@ a {
     font-size: 0.68rem;
   }
 
-  .site-header {
-    top: 0.45rem;
-  }
-
   .post-shell {
     padding: 1.5rem 1rem 2.5rem;
   }
 
   .post-shell h1 {
     max-width: none;
+  }
+
+  :root[data-theme='t18'] body {
+    background: var(--bg);
+  }
+
+  :root[data-theme='t18'] .site-shell {
+    width: min(100vw - 1rem, var(--content-width));
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  :root[data-theme='t18'] .site-header {
+    margin-bottom: 1.7rem;
+    padding: 0.7rem 0;
+    background: var(--bg);
+  }
+
+  :root[data-theme='t18'] .site-header nav {
+    gap: 0.15rem;
+  }
+
+  :root[data-theme='t18'] .site-header nav a {
+    padding: 0.3rem 0.48rem;
+    font-size: 0.9rem;
+  }
+
+  :root[data-theme='t18'] .post-shell {
+    border: 0;
+    padding: 1rem 0.75rem 2.2rem;
+  }
+
+  :root[data-theme='t18'] .post-shell h1 {
+    font-size: clamp(2.5rem, 12vw, 3.8rem);
+    line-height: 1.02;
+  }
+
+  :root[data-theme='t18'] .post-content {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  :root[data-theme='t18'] .post-content h2 {
+    margin-top: 2.5em;
+    font-size: 1.9rem;
+  }
+
+  :root[data-theme='t18'] .theme-picker {
+    right: 0.65rem;
+    bottom: 0.65rem;
+    width: auto;
   }
 }
