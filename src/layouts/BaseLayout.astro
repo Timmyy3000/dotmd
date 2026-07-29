@@ -63,10 +63,7 @@ const pageKind = pathname === '/' ? 'feed' : pathname.startsWith('/blog') ? 'ind
 		{pageKind === 'post' && <div class="reading-progress" data-reading-progress aria-hidden="true" />}
 		<div class="site-shell">
 			<header class="site-header">
-				<div class="brand-lockup">
-					<a class="brand" href="/">dotmd</a>
-					<span class="brand-note">notes from the edge of the possible</span>
-				</div>
+				<a class="brand" href="/">dotmd</a>
 				<nav aria-label="Main">
 					<a class={pathname === '/' ? 'active' : ''} aria-current={pathname === '/' ? 'page' : undefined} href="/">Latest</a>
 					<a class={pathname.startsWith('/blog') ? 'active' : ''} aria-current={pathname.startsWith('/blog') ? 'page' : undefined} href="/blog">Archive</a>

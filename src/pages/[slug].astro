@@ -22,12 +22,6 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 	canonicalPath={canonicalUrl}
 	image={post.data.coverImage ? (post.data.coverImage.startsWith('/') ? post.data.coverImage : `/${post.data.coverImage}`) : undefined}
 >
-	<nav class="post-controls post-controls-external" aria-label="Post utilities">
-		<a href={`/${post.slug}.llm.txt`}>Plain text</a>
-		<a href="/rss.xml">RSS</a>
-		<a href="/blog">All posts</a>
-	</nav>
-
 	<article class="post-shell">
 		<header class="post-header">
 			<p class="post-meta">
