@@ -23,7 +23,7 @@ It was manual, but it gave me a glimpse of what coding could become. I couldn’
 
 Later, tools such as [Claude Code](https://www.anthropic.com/claude-code) and [Codex](https://github.com/openai/codex) made it natural to work with an agent that could inspect a repository, run commands, change files, commit code, and open a pull request. The editor became less important. Planning became more important.
 
-In January 2026, I posted that I had reached the top one percent of Cursor users with three billion tokens processed. The screenshot is a usage marker, not a measure of engineering quality, but it captures how much of my work had moved into prompting and iteration.
+In January 2026, I posted that I had reached the top one percent of Cursor users with three billion tokens processed. I use the screenshot as a usage marker; the engineering-quality evidence comes from the review and shipping loop. It captures how much of my work had moved into prompting and iteration.
 
 <blockquote class="twitter-tweet">
   <p lang="en" dir="ltr">Ik I'm late to the party<br><br>But being in the top 1% of Cursor users is wild. 3B tokens, damn <a href="https://t.co/q1gxImVCMh">https://t.co/q1gxImVCMh</a></p>
@@ -34,9 +34,9 @@ Eventually, the output became too large for me to supervise line by line. I need
 
 ## SLADE starts with intent
 
-A detailed feature spec is useful, but it is not required. The starting point can be a PRD from a product manager, a feature request from a user, a bug report, or a conversation with an agent that eventually becomes clear enough to act on.
+A detailed feature spec is useful. The starting point can also be a PRD from a product manager, a feature request from a user, a bug report, or a conversation with an agent that eventually becomes clear enough to act on.
 
-The first skill is [**kickoff**](https://github.com/Timmyy3000/skills/blob/main/skills/kickoff/SKILL.md). It captures the intent, understands the repository context, chooses the planning mode, and routes the work to the next stage. It stays thin. It does not try to own planning, implementation, review, and delivery at the same time.
+The first skill is [**kickoff**](https://github.com/Timmyy3000/skills/blob/main/skills/kickoff/SKILL.md). It captures the intent, understands the repository context, chooses the planning mode, and routes the work to the next stage. It stays thin: planning, implementation, review, and delivery remain separate stages.
 
 This general idea of portable, composable skills has also been formalized by [Anthropic’s Agent Skills](https://claude.com/blog/skills): folders that package instructions, scripts, and resources an agent can load when they are relevant. My skills apply that idea to the software-development lifecycle.
 
@@ -83,13 +83,44 @@ This matters because agents that write tests after the implementation tend to wr
 
 When several packets can move independently, [Forest](https://github.com/Timmyy3000/git-forest) gives each loop its own Git worktree. I built it to make parallel agent work practical: multiple features can move through the same codebase without fighting over one working directory or branch.
 
+The loop also supports delegated implementation. `ship-it` keeps the current agent as the orchestrator, then lets it resolve implementation as `never`, `auto`, or `always`. When delegation is enabled, the orchestrator turns the plan into bounded packets with exclusive ownership, dispatches dependency-ready packets in parallel, integrates the results, and reruns the checks itself.
+
+That changes the model economics. A stronger model can conduct the work, make the shared decisions, and review the result while a fleet of smaller, cheaper workers handles well-bounded packets. Independent work can finish sooner and cost less than asking one expensive model to do everything. Worker reports are only inputs; the orchestrator inspects their diffs and validates the integrated result.
+
 ## The loop in production
 
 The best example is [Nabu PR #13](https://github.com/Timmyy3000/nabu/pull/13), which added agent-first temporary shared spaces. Nabu is a Markdown-native, agent-first knowledge OS. This feature lets an agent inspect a requested folder, show the user what will be shared, get confirmation, create a temporary live shared space, and generate a one-time invite another human or agent can redeem.
 
-I had already done the product thinking. The feature request covered the goals, non-goals, workflows, security model, tests, acceptance criteria, and API surface. Kickoff did not invent the feature. It moved the decided intent into the engineering loop.
+I had already done the product thinking. The feature request covered the goals, non-goals, workflows, security model, tests, acceptance criteria, and API surface. Kickoff moved that decided intent into the engineering loop.
 
 The first run moved through the stages in order: plan approval, adversarial review, implementation, Red–Green TDD, validation, independent review, and PR handoff.
+
+<div class="workflow-gallery" aria-label="Nabu kickoff and ship-it workflow screenshots">
+  <figure>
+    <img src="/images/slade/nabu-plan-approval.png" alt="Nabu kickoff showing the reviewed implementation plan before code changes begin" />
+    <figcaption><strong>Plan approval.</strong> The plan is reviewed before implementation begins.</figcaption>
+  </figure>
+  <figure>
+    <img src="/images/slade/nabu-human-approval.png" alt="Nabu kickoff showing the human approval gate before implementation" />
+    <figcaption><strong>Human approval.</strong> The accepted plan clears the gate and hands execution to ship-it.</figcaption>
+  </figure>
+  <figure>
+    <img src="/images/slade/nabu-adversarial-review.png" alt="Nabu kickoff showing a fresh-context adversarial review of the plan" />
+    <figcaption><strong>Adversarial review.</strong> A fresh context attacks the plan before implementation gets expensive.</figcaption>
+  </figure>
+  <figure>
+    <img src="/images/slade/nabu-ship-it.png" alt="Nabu ship-it run showing bounded implementation and validation work" />
+    <figcaption><strong>Ship-it.</strong> The accepted work moves through bounded implementation packets and validation.</figcaption>
+  </figure>
+  <figure>
+    <img src="/images/slade/nabu-code-review.png" alt="Nabu workflow showing independent code review before pull request creation" />
+    <figcaption><strong>Independent review.</strong> A separate pass checks the branch before the PR is handed off.</figcaption>
+  </figure>
+  <figure>
+    <img src="/images/slade/nabu-pr-handoff.png" alt="Nabu workflow showing the completed branch being handed off to pull request review" />
+    <figcaption><strong>PR handoff.</strong> The implementation leaves the local loop with its validation evidence attached.</figcaption>
+  </figure>
+</div>
 
 <div class="post-stats" aria-label="Observed Nabu ship-it run details">
   <div><strong>66m 24s</strong><span>first ship-it run</span></div>
@@ -97,7 +128,7 @@ The first run moved through the stages in order: plan approval, adversarial revi
   <div><strong>5/5</strong><span>later Enkii review state</span></div>
 </div>
 
-The PR was substantial, but the point here is not to tour every file. The point is that the feature went through the same loop: the plan was reviewed, the implementation was bounded, the tests were written as part of the work, and the result passed through independent review before it merged and went to production.
+The PR was substantial, but I’m using it as workflow evidence rather than a file-by-file tour. The plan was reviewed, the implementation was bounded, the tests were written as part of the work, and the result passed through independent review before it merged and went to production.
 
 ## The PR keeps looping
 
@@ -107,11 +138,9 @@ After [create-pr](https://github.com/Timmyy3000/skills/blob/main/skills/create-p
 - security;
 - repository-defined policy.
 
-The agent checks for new review output, fixes the findings, and waits for another pass. If a review lane is below five out of five, the loop is not done.
+The agent checks for new review output, fixes the findings, and waits for another pass. The loop continues until every review lane reaches five out of five.
 
 On Nabu PR #13, Enkii found a token-revocation mapping bug, an inconsistent duration default, and UI authorization paths that could turn an access failure into a 500 error. The security pass checked path traversal, symlink boundaries, scoped authorization, hashed secrets, atomic invite redemption, and revision-aware writes.
-
-> Sometimes an agent finishes the code in an hour, then spends the next two hours fixing the bugs, security issues, and policy issues that Enkii finds. That is not wasted time. That is the part that makes the code hardened enough to ship.
 
 That is the difference between an agent that produces a diff and an engineering system that produces software I’m willing to ship.
 
@@ -122,15 +151,21 @@ I spend less time acting as a human syntax checker and more time deciding what s
 That is how I can move tens of pull requests through a week, sometimes involving tens of thousands of lines of code. Those are my numbers, not a benchmark or a promise for everyone else.
 
 <div class="velocity-card" aria-label="Engineering output over the last thirty days">
-  <div class="velocity-head">
+  <div class="velocity-card-top">
+    <div>
+      <span class="velocity-kicker">ENGINEERING VELOCITY</span>
+      <h3>Last thirty days</h3>
+    </div>
+    <div class="velocity-total"><strong>68</strong><span>PRs merged</span></div>
+  </div>
+  <div class="velocity-metrics">
     <div><strong>10</strong><span>unique repos</span></div>
     <div><strong>496</strong><span>commits</span></div>
-    <div><strong>68</strong><span>PRs opened</span></div>
-    <div><strong>68</strong><span>PRs merged</span></div>
+    <div><strong>+61.4k</strong><span>lines added</span></div>
   </div>
   <div class="velocity-table-wrap">
     <table>
-      <caption>My engineering output in the last thirty days</caption>
+      <caption>Scope breakdown</caption>
       <thead><tr><th>Scope</th><th>Repos</th><th>Commits</th><th>Code changes*</th><th>PRs opened</th><th>PRs merged</th></tr></thead>
       <tbody>
         <tr><td>Docsyde</td><td>4</td><td>363</td><td>+45,010 / −8,669</td><td>45</td><td>47</td></tr>
@@ -143,7 +178,7 @@ That is how I can move tens of pull requests through a week, sometimes involving
 
 <small>* Lines added and removed in the report.</small>
 
-The only reason I can sustain this kind of output is SLADE. Not because the agents are magically reliable, and not because I stopped caring about the code. The speed comes from moving supervision up a level: intent, plans, bounded packets, tests, independent review, and explicit shipping gates.
+SLADE is what makes this output sustainable. Agents handle more of the implementation; the system supplies intent, plans, bounded packets, tests, independent review, and explicit shipping gates. That is how I can move quickly without turning speed into guesswork.
 
 Other approaches can work. Some people prefer multi-agent orchestration, loop engineering, graph engineering, or a much simpler single-agent workflow. SLADE is the arrangement I found useful because it lets me give agents more responsibility without giving up process control.
 
@@ -151,11 +186,12 @@ I supervise the intent, the plan, the boundaries, the tests, the reviews, the po
 
 That is what I mean when I say I ship without reading code.
 
-<div class="further-reading"><strong>Further reading</strong><br />
-  <a href="https://github.com/Timmyy3000/skills">The skills repository</a> ·
-  <a href="https://x.com/timithechef/status/2008136073223029101?s=20">The Cursor usage post</a> ·
-  <a href="https://github.com/Timmyy3000/nabu/pull/13">Nabu PR #13</a> ·
-  <a href="https://github.com/Timmyy3000/enkii">Enkii</a> ·
-  <a href="https://github.com/Timmyy3000/git-forest">Forest</a> ·
-  <a href="https://github.com/Timmyy3000/lavish-axi">Lavish</a>
-</div>
+## Get started
+
+You can start without rebuilding this whole system. Give your agent the intake boundary first:
+
+```bash
+npx skills add Timmyy3000/skills --skill kickoff
+```
+
+Then ask it to run kickoff on a real feature, bug report, or rough idea. Kickoff will gather the repository context, clarify the work, and route it into planning. Add the review and delivery skills when you are ready to run the full loop.
