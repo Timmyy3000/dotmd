@@ -2,7 +2,7 @@
 
 A personal blog by [Timi](https://x.com/timithechef) — built entirely by AI agents, with zero human-written code but 100% human thought. 
 
-Live at [md.timi.click](https://md.timi.click)
+Live at [timi.click](https://timi.click)
 
 ## What is this
 
@@ -67,7 +67,7 @@ Optional fields: `updated`, `coverImage`, `coverAlt`, `series`, `canonicalUrl`.
 
 ## Deployment
 
-Set the `SITE_URL` environment variable in your deploy pipeline, or it defaults to `https://md.timi.click`.
+Set the `SITE_URL` environment variable in your deploy pipeline, or it defaults to `https://timi.click`.
 
 Works out of the box on Vercel, Netlify, Cloudflare Pages, or any static host. Point build command to `bun run build`, output directory to `dist`.
 

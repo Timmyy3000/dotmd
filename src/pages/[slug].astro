@@ -13,6 +13,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props as { post: PostEntry };
 const { Content } = await post.render();
+const hasTwitterEmbed = post.body.includes('twitter-tweet');
 const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 ---
 
@@ -49,5 +50,6 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 		<div class="post-content">
 			<Content />
 		</div>
+		{hasTwitterEmbed && <script is:inline async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>}
 	</article>
 </BaseLayout>
