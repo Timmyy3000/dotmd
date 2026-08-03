@@ -95,30 +95,18 @@ I had already done the product thinking. The feature request covered the goals, 
 
 The first run moved through the stages in order: plan approval, adversarial review, implementation, Red–Green TDD, validation, independent review, and PR handoff.
 
-<div class="workflow-gallery" aria-label="Nabu kickoff and ship-it workflow screenshots">
+<div class="workflow-gallery" aria-label="Nabu kickoff workflow screenshots">
   <figure>
     <img src="/images/slade/nabu-plan-approval.png" alt="Nabu kickoff showing the reviewed implementation plan before code changes begin" />
     <figcaption><strong>Plan approval.</strong> The plan is reviewed before implementation begins.</figcaption>
-  </figure>
-  <figure>
-    <img src="/images/slade/nabu-human-approval.png" alt="Nabu kickoff showing the human approval gate before implementation" />
-    <figcaption><strong>Human approval.</strong> The accepted plan clears the gate and hands execution to ship-it.</figcaption>
   </figure>
   <figure>
     <img src="/images/slade/nabu-adversarial-review.png" alt="Nabu kickoff showing a fresh-context adversarial review of the plan" />
     <figcaption><strong>Adversarial review.</strong> A fresh context attacks the plan before implementation gets expensive.</figcaption>
   </figure>
   <figure>
-    <img src="/images/slade/nabu-ship-it.png" alt="Nabu ship-it run showing bounded implementation and validation work" />
-    <figcaption><strong>Ship-it.</strong> The accepted work moves through bounded implementation packets and validation.</figcaption>
-  </figure>
-  <figure>
-    <img src="/images/slade/nabu-code-review.png" alt="Nabu workflow showing independent code review before pull request creation" />
+    <img src="/images/slade/nabu-code-review.png" alt="Nabu workflow showing an independent code review of the implementation branch" />
     <figcaption><strong>Independent review.</strong> A separate pass checks the branch before the PR is handed off.</figcaption>
-  </figure>
-  <figure>
-    <img src="/images/slade/nabu-pr-handoff.png" alt="Nabu workflow showing the completed branch being handed off to pull request review" />
-    <figcaption><strong>PR handoff.</strong> The implementation leaves the local loop with its validation evidence attached.</figcaption>
   </figure>
 </div>
 
@@ -188,10 +176,10 @@ That is what I mean when I say I ship without reading code.
 
 ## Get started
 
-You can start without rebuilding this whole system. Give your agent the intake boundary first:
+Tell your agent to install the [kickoff skill](https://github.com/Timmyy3000/skills/blob/main/skills/kickoff/SKILL.md):
 
 ```bash
 npx skills add Timmyy3000/skills --skill kickoff
 ```
 
-Then ask it to run kickoff on a real feature, bug report, or rough idea. Kickoff will gather the repository context, clarify the work, and route it into planning. Add the review and delivery skills when you are ready to run the full loop.
+The skill has enough context to get you started. Good luck building your own SLADE loops.
