@@ -837,8 +837,7 @@ a {
   margin: 1.8rem auto !important;
 }
 
-.post-stats,
-.velocity-head {
+.post-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
@@ -849,14 +848,12 @@ a {
   border-radius: var(--radius-md);
 }
 
-.post-stats > div,
-.velocity-head > div {
+.post-stats > div {
   padding: 1rem;
   background: var(--surface-tint);
 }
 
-.post-stats strong,
-.velocity-head strong {
+.post-stats strong {
   display: block;
   color: var(--accent);
   font-family: var(--font-display);
@@ -864,13 +861,41 @@ a {
   line-height: 1.1;
 }
 
-.post-stats span,
-.velocity-head span {
+.post-stats span {
   display: block;
   margin-top: 0.35rem;
   color: var(--muted);
   font-size: 0.78rem;
   line-height: 1.35;
+}
+
+.workflow-gallery {
+  display: grid;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.workflow-gallery figure {
+  margin: 0;
+  padding: 0.8rem;
+  border: var(--border-width) solid var(--surface-border);
+  border-radius: var(--radius-md);
+  background: var(--surface-tint);
+}
+
+.workflow-gallery figure img {
+  width: 100%;
+  margin: 0;
+  border-radius: calc(var(--radius-md) - 2px);
+}
+
+.workflow-gallery figcaption {
+  margin: 0.7rem 0.1rem 0.1rem;
+  font-size: 0.82rem;
+}
+
+.workflow-gallery figcaption strong {
+  color: var(--text);
 }
 
 .velocity-card {
@@ -881,11 +906,72 @@ a {
   overflow: hidden;
 }
 
-.velocity-card .velocity-head {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: 0;
-  border: 0;
-  border-radius: 0;
+.velocity-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.2rem 1rem;
+  background: var(--surface-tint);
+}
+
+.velocity-kicker {
+  display: block;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.velocity-card h3 {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.velocity-total {
+  text-align: right;
+}
+
+.velocity-total strong {
+  display: block;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 0.95;
+}
+
+.velocity-total span,
+.velocity-metrics span {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+
+.velocity-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: var(--border-width) solid var(--surface-border);
+  border-bottom: var(--border-width) solid var(--surface-border);
+}
+
+.velocity-metrics > div {
+  padding: 0.85rem 1.2rem;
+}
+
+.velocity-metrics > div + div {
+  border-left: var(--border-width) solid var(--surface-border);
+}
+
+.velocity-metrics strong {
+  display: block;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  line-height: 1;
 }
 
 .velocity-table-wrap {
@@ -901,10 +987,11 @@ a {
 }
 
 .velocity-card caption {
-  padding: 0.9rem 1rem 0.25rem;
+  padding: 0.85rem 1.2rem 0.25rem;
   text-align: left;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .velocity-card th,
@@ -917,7 +1004,13 @@ a {
 
 .velocity-card th:first-child,
 .velocity-card td:first-child {
+  padding-left: 1.2rem;
   text-align: left;
+}
+
+.velocity-card th:last-child,
+.velocity-card td:last-child {
+  padding-right: 1.2rem;
 }
 
 .velocity-card th {
@@ -952,16 +1045,6 @@ a {
   margin: -0.7rem 0 1.7rem;
   color: var(--muted);
   font-size: 0.78rem;
-}
-
-.further-reading {
-  margin-top: 2rem;
-  padding: 1rem;
-  border: var(--border-width) solid var(--surface-border);
-  border-radius: var(--radius-md);
-  background: var(--surface-tint);
-  font-size: 0.9rem;
-  line-height: 1.65;
 }
 
 .post-content h2,
