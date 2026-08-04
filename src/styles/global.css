@@ -1038,12 +1038,66 @@ a {
 
 @media (max-width: 700px) {
   .velocity-card table {
-    min-width: 650px;
+    display: block;
+    min-width: 0;
   }
 
-  .velocity-card th,
+  .velocity-card thead {
+    display: none;
+  }
+
+  .velocity-card tbody {
+    display: block;
+  }
+
+  .velocity-card tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 1rem;
+    padding: 0.8rem 1.2rem;
+    border-top: var(--border-width) solid var(--surface-border);
+  }
+
+  .velocity-card td,
+  .velocity-card td:first-child,
+  .velocity-card td:last-child {
+    min-width: 0;
+    padding: 0;
+    border-top: 0;
+    white-space: normal;
+  }
+
   .velocity-card td {
-    white-space: nowrap;
+    text-align: right;
+  }
+
+  .velocity-card td:first-child {
+    grid-column: 1 / -1;
+    text-align: left;
+    font-weight: 700;
+  }
+
+  .velocity-card td:not(:first-child)::before {
+    display: block;
+    margin-bottom: 0.1rem;
+    color: var(--muted);
+    font-size: 0.66rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .velocity-card td:nth-child(2)::before { content: 'Repos'; }
+  .velocity-card td:nth-child(3)::before { content: 'Commits'; }
+  .velocity-card td:nth-child(4)::before { content: 'Code changes'; }
+  .velocity-card td:nth-child(5)::before { content: 'PRs opened'; }
+  .velocity-card td:nth-child(6)::before { content: 'PRs merged'; }
+
+  .velocity-card .combined td {
+    background: transparent;
+  }
+
+  .velocity-card .combined {
+    background: var(--surface-tint);
   }
 }
 
@@ -1069,6 +1123,8 @@ a {
   border-radius: var(--radius-md);
   padding: 0.9rem;
   overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .post-content :not(pre) > code {
@@ -3068,8 +3124,6 @@ a {
   }
 
   :root[data-theme='t18'] .theme-picker {
-    right: 0.65rem;
-    bottom: 0.65rem;
-    width: auto;
+    width: min(22rem, calc(100vw - 1rem));
   }
 }
