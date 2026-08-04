@@ -38,6 +38,9 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 					))}
 				</ul>
 			)}
+			<p class="reader-count" data-reader-count hidden aria-live="polite">
+				<span data-reader-count-value>—</span> unique reader<span data-reader-count-plural>s</span>
+			</p>
 		</header>
 		{post.data.coverImage && (
 			<img
@@ -50,6 +53,31 @@ const canonicalUrl = post.data.canonicalUrl ?? `/${post.slug}`;
 		<div class="post-content">
 			<Content />
 		</div>
+		<script is:inline define:vars={{ articleSlug: post.slug }}>
+			const readerCount = document.querySelector('[data-reader-count]');
+			const readerCountValue = document.querySelector('[data-reader-count-value]');
+			const readerCountPlural = document.querySelector('[data-reader-count-plural]');
+			const controller = new AbortController();
+			const timeout = window.setTimeout(() => controller.abort(), 2500);
+
+			fetch('https://drain.timi.click/v1/article-views', {
+				method: 'POST',
+				mode: 'cors',
+				credentials: 'omit',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ article: articleSlug }),
+				signal: controller.signal,
+			})
+				.then((response) => (response.ok ? response.json() : Promise.reject(new Error('reader count unavailable'))))
+				.then(({ count }) => {
+					if (!readerCount || !readerCountValue || !Number.isFinite(count)) return;
+					readerCountValue.textContent = count.toLocaleString();
+					if (count === 1) readerCountPlural?.remove();
+					readerCount.hidden = false;
+				})
+				.catch(() => {})
+				.finally(() => window.clearTimeout(timeout));
+		</script>
 		{hasTwitterEmbed && <script is:inline async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>}
 	</article>
 </BaseLayout>

@@ -708,6 +708,18 @@ a {
   color: var(--accent);
 }
 
+.reader-count {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.reader-count [data-reader-count-value] {
+  color: var(--text);
+  font-weight: 700;
+}
+
 .read-link {
   display: inline-block;
   margin-top: 0.75rem;
