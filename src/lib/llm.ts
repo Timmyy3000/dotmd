@@ -6,7 +6,8 @@ function normalizeCodeBlocks(markdown: string): string {
 }
 
 export function markdownToLlmText(markdown: string): string {
-	let text = normalizeCodeBlocks(markdown);
+	// MDX: drop import lines; component tags are stripped below.
+	let text = normalizeCodeBlocks(markdown.replace(/^import .*$/gm, ''));
 
 	text = text.replace(/`([^`]+)`/g, '$1');
 	text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt: string, src: string) =>

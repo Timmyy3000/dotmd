@@ -1,0 +1,258 @@
+---
+title: "Shipping on the Go"
+description: "A step-by-step guide to running your coding agents on an always-on VPS and driving them from your laptop and phone with T3 Code."
+date: 2026-10-10
+slug: "shipping-on-the-go"
+tags: ["ai", "agents", "t3 code", "vps", "guide"]
+draft: true
+---
+
+import Callout from '../../components/guide/Callout.astro';
+import FleetMap from '../../components/guide/FleetMap.astro';
+import ProxyFailover from '../../components/guide/ProxyFailover.astro';
+import ConnectRoutes from '../../components/guide/ConnectRoutes.astro';
+
+<Callout type="tip" title="Just want the setup?">
+You don't have to read all of this. Send this link to your agent and ask it to walk you through the setup: [timi.click/shipping-on-the-go.llm.txt](https://timi.click/shipping-on-the-go.llm.txt)
+</Callout>
+
+People keep asking me what my setup looks like, so this is the full guide.
+
+My agents don't run on my laptop anymore. They run on a cheap VPS that never sleeps, and I control them from my laptop and my phone. I can start a task at my desk, close the lid, and check on it from my phone while I'm out.
+
+<FleetMap />
+
+The setup has seven steps:
+
+1. **[T3 Code](https://t3.codes) on your laptop**, the app you'll drive everything from.
+2. **A VPS**, the always-on machine your agents live on.
+3. **A VPS environment that matches your laptop**, so agents can do the same work there.
+4. **CLI Proxy** *(optional)*, if you have more than one subscription on a provider.
+5. **T3 Code on the VPS**, connected to your laptop with full permissions.
+6. **Your laptop on the proxy** *(optional)*, so it shares the same pool of accounts.
+7. **T3 Code on your phone**, connected to both machines.
+
+Once your agent has SSH access to the VPS, it can do most of this for you. I point out where that helps.
+
+## 1. Install T3 Code on your laptop
+
+[T3 Code](https://github.com/pingdotgg/t3code) is a control surface for coding agents. It doesn't replace Claude Code or Codex. It runs them for you, using the subscriptions you're already logged into, and gives you one app to manage threads, worktrees, and machines.
+
+Download the desktop app from the [GitHub releases page](https://github.com/pingdotgg/t3code/releases). I recommend the **nightly** build (the releases tagged `-nightly`). It moves fast, and the newest features, including a lot of the remote-machine work in this guide, land there first.
+
+Before you open it, install at least one agent CLI on your laptop and log in:
+
+```bash
+# Claude Code
+curl -fsSL https://claude.ai/install.sh | bash
+claude auth login
+
+# Codex
+npm install -g @openai/codex
+codex login
+```
+
+Open T3 Code, start a thread in any project, and check that your agent answers.
+
+## 2. Get a VPS
+
+Any Linux VPS works. I use [Contabo](https://contabo.com) because it's cheap and reliable. [Hetzner](https://www.hetzner.com/cloud) is a good alternative, and any other provider works too.
+
+What I'd look for:
+
+- **Ubuntu 24.04**, so every command in this guide works as written.
+- **At least 8 GB of RAM.** Agents, language servers, Docker, and a headless browser add up quickly.
+- **A region close to you**, so the terminal feels responsive.
+
+Once it's running, put it on [Tailscale](https://tailscale.com). Tailscale gives your laptop, phone, and VPS a private network. Every device gets a stable address and a name, and nothing has to be exposed to the public internet.
+
+```bash
+# on the VPS
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+```
+
+Install Tailscale on your laptop and phone too, and sign in with the same account. From now on, you can reach the VPS by its tailnet name from anywhere.
+
+<Callout type="tip">
+Once you can SSH into the VPS from your laptop, you can hand most of the next step to your local agent. Tell it what you use locally, and ask it to install the same tools on the server.
+</Callout>
+
+## 3. Make the VPS feel like your laptop
+
+Your agents on the VPS can only do what the VPS can do. If your laptop has Node, Bun, Python, Docker, and the GitHub CLI, the VPS needs them too. Otherwise the first `npm install` or `docker compose up` an agent runs will fail.
+
+Go through what you actually use. For me that's roughly:
+
+```bash
+# basics
+sudo apt update && sudo apt install -y git build-essential curl unzip
+
+# GitHub CLI, then log in so agents can push and open PRs
+sudo apt install -y gh
+gh auth login
+
+# Node (via fnm), Bun, and uv for Python
+curl -fsSL https://fnm.vercel.app/install | bash
+curl -fsSL https://bun.sh/install | bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Docker
+curl -fsSL https://get.docker.com | sh
+
+# the agent CLIs, logged in just like on your laptop
+curl -fsSL https://claude.ai/install.sh | bash
+npm install -g @openai/codex
+```
+
+Then log the agent CLIs in (`claude auth login`, `codex login`), clone the repos you work on, and copy over any `.env` files your projects need.
+
+<Callout type="gotcha" title="Gotcha: old Codex builds">
+Install Codex from npm, not snap. The snap package was an older build for me, and it silently ignored custom providers, which breaks the proxy setup in the next step.
+</Callout>
+
+<Callout type="gotcha" title="Gotcha: running as root">
+Most VPSes give you a root user. Claude Code refuses to skip permission prompts as root unless it knows it's on a sandboxed machine. If you want T3 to run Claude in full-access mode on the server, set `IS_SANDBOX=1` for the T3 service (I'll show where in step 5).
+</Callout>
+
+## 4. Set up CLI Proxy (optional)
+
+<Callout type="optional">
+Skip this if you have one subscription per provider. Come back if you ever add a second.
+</Callout>
+
+I have two Claude subscriptions and a Codex one. Before the proxy, I logged each machine into one account. When that account hit its five-hour limit, I logged out and logged into the other one by hand.
+
+[CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) fixes that. You log every account into it once, and it gives you a single endpoint that speaks the Anthropic and OpenAI APIs. Your tools point at that endpoint instead of at Anthropic or OpenAI directly. When one account hits its limit, the proxy cools it down and retries on the next one.
+
+<ProxyFailover />
+
+I run it in Docker on the VPS. Publish the port only on the VPS's **Tailscale address**. Then only your own devices can reach it.
+
+```yaml
+# /opt/cliproxy/docker-compose.yml
+services:
+  cli-proxy-api:
+    image: eceasy/cli-proxy-api:latest
+    ports: ["<vps-tailscale-ip>:8317:8317"]
+    volumes:
+      - ./config.yaml:/CLIProxyAPI/config.yaml
+      - ./auths:/root/.cli-proxy-api
+    restart: unless-stopped
+```
+
+In `config.yaml`, set an API key for your own tools under `access.api-keys`, and a `management.secret-key` for the dashboard. Then log each account in, following the [CLIProxyAPI README](https://github.com/router-for-me/CLIProxyAPI). The dashboard lives at `http://<vps-tailscale-name>:8317/management.html` and shows every account, its requests, and its remaining quota.
+
+Now point the VPS's agents at it. Claude Code reads its environment from `~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://<vps-tailscale-name>:8317",
+    "ANTHROPIC_API_KEY": "<your proxy api key>"
+  }
+}
+```
+
+Codex gets a custom provider in `~/.codex/config.toml`:
+
+```toml
+model_provider = "fleet"
+
+[model_providers.fleet]
+name = "Fleet proxy"
+base_url = "http://<vps-tailscale-name>:8317/v1"
+env_key = "FLEET_PROXY_KEY"  # an env var holding your proxy api key
+wire_api = "responses"
+```
+
+Run a prompt with each CLI and check the proxy dashboard. If the request count goes up, it's working.
+
+<Callout type="tip" title="Not into proxies?">
+T3 Code can also run several Claude or Codex accounts natively, as separate provider instances with their own config directories. It doesn't fail over automatically, but it's less to run. See the [multiple accounts docs](https://github.com/pingdotgg/t3code/blob/main/docs/user/providers-claude.md).
+</Callout>
+
+## 5. Run T3 Code on the VPS and connect to it
+
+Install the T3 server on the VPS. The install script takes a channel, so you can match the nightly desktop app:
+
+```bash
+curl -fsSL https://t3.codes/install.sh | T3CODE_CHANNEL=nightly sh
+
+# keep it running in the background, across reboots
+t3 service install
+```
+
+Because T3 runs the CLIs you installed in step 3, it uses the proxy from step 4 automatically. You don't need to configure T3 for it.
+
+Next, connect your laptop to it. There are two routes, and you can use both:
+
+<ConnectRoutes />
+
+**Route A: Tailscale.** On the VPS, run:
+
+```bash
+t3 pair --tailscale
+```
+
+This publishes the server over HTTPS on your tailnet and prints a one-time pairing link and QR code. In the desktop app, go to **Settings → Connections → Add environment** and paste the link.
+
+**Route B: T3 Connect.** On the VPS, run `t3 connect` and follow the sign-in. On your laptop, sign in to the same T3 Connect account in **Settings → Connections** and pick the environment. No Tailscale needed.
+
+<Callout type="gotcha" title="Gotcha: limited permissions">
+Sometimes the app says your connection has limited permissions, and the file and browser panels don't work. This means the pairing gave your device only some scopes. Check under **Settings → Connections → Permissions**. To fix it, create a new link with `t3 pair --tailscale` and pair again. Its default scopes include files, settings, providers, and the browser. Then remove the old entry.
+</Callout>
+
+Two more things I had to fix on the server before everything worked:
+
+**The browser.** T3 can give agents a headless browser on the VPS, but it needs Chrome and its libraries installed first:
+
+```bash
+t3 browser setup
+```
+
+On a root VPS, Chrome's sandbox still won't start, so disable it for the T3 service. The same override is where `IS_SANDBOX=1` from step 3 goes:
+
+```bash
+systemctl --user edit t3code
+```
+
+```ini
+[Service]
+Environment=T3CODE_SERVER_BROWSER_SANDBOX=0
+Environment=IS_SANDBOX=1
+```
+
+```bash
+t3 service restart
+```
+
+Now start a thread on the VPS environment from your laptop. Ask the agent to run `hostname`. If it prints the VPS's name, you're driving the server.
+
+## 6. Put your laptop on the proxy too (optional)
+
+If you set up the proxy, point your laptop's CLIs at it as well, so local threads draw from the same pool of accounts. Use the same `~/.claude/settings.json` and `~/.codex/config.toml` from step 4 on your laptop, and set `FLEET_PROXY_KEY` in your environment.
+
+Restart T3 Code afterwards so the agents pick up the new settings. The proxy dashboard should show requests from both machines.
+
+<Callout type="gotcha" title="Gotcha: the proxy needs Tailscale">
+The proxy only listens on your tailnet. If Tailscale is off on your laptop, local agents can't reach it and will fail. Leave Tailscale running, or remove the proxy settings when you go offline.
+</Callout>
+
+## 7. Put T3 Code on your phone
+
+Install the T3 Code app for [iOS](https://apps.apple.com/us/app/t3-code-remote-claude-more/id6787819824) or [Android](https://play.google.com/store/apps/details?id=com.t3tools.t3code).
+
+Connect it the same way as your laptop. With Tailscale, run `t3 pair --tailscale` on the VPS and scan the QR code from **Settings → Environments** in the app. With T3 Connect, sign in. To reach your laptop's local threads from your phone, create a link in **Settings → Connections** on the desktop app.
+
+Now you can start a long task, leave your desk, and check it from your phone. You can approve actions, send follow-ups, and start new threads from the app.
+
+## The result
+
+- Your agents run on a machine that never sleeps.
+- Your laptop and phone can both start, follow, and steer them.
+- With the proxy, every tool on every machine draws from every subscription you pay for. When one account hits its limit, the next one takes over.
+
+If the VPS breaks, you can rebuild it in an afternoon, and your agent can do most of the work.
+
+If you get stuck on any step, find me on X at [@timithechef](https://x.com/timithechef).

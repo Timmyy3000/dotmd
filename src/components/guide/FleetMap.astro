@@ -1,0 +1,50 @@
+---
+// Laptop and phone reach the VPS over a private tailnet; packets loop between them.
+---
+
+<figure class="guide-figure fleet-map">
+	<svg viewBox="0 0 640 300" role="img" aria-label="A laptop and a phone connected to a VPS over a private Tailscale network">
+		<rect class="tailnet" x="12" y="12" width="616" height="276" rx="22" />
+		<text class="tailnet-label" x="32" y="40">your tailnet (private)</text>
+
+		<line class="link" x1="140" y1="150" x2="320" y2="150" />
+		<line class="link" x1="500" y1="150" x2="320" y2="150" />
+
+		<g class="node" transform="translate(70 150)">
+			<rect x="-58" y="-40" width="116" height="80" rx="12" />
+			<text y="-6">💻</text>
+			<text class="node-label" y="24">Laptop</text>
+		</g>
+		<g class="node node-vps" transform="translate(320 150)">
+			<rect x="-70" y="-62" width="140" height="124" rx="14" />
+			<text y="-30">🖥️</text>
+			<text class="node-label" y="-4">VPS</text>
+			<text class="node-sub" y="18">T3 server</text>
+			<text class="node-sub" y="36">agents · CLIs</text>
+		</g>
+		<g class="node" transform="translate(570 150)">
+			<rect x="-58" y="-40" width="116" height="80" rx="12" />
+			<text y="-6">📱</text>
+			<text class="node-label" y="24">Phone</text>
+		</g>
+
+		<circle class="packet packet-a" r="6" cx="140" cy="150" />
+		<circle class="packet packet-b" r="6" cx="500" cy="150" />
+	</svg>
+	<figcaption>The VPS does the work. Your laptop and phone are just windows into it.</figcaption>
+</figure>
+
+<script>
+	import { createTimeline } from 'animejs';
+
+	if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		document.querySelectorAll<SVGSVGElement>('.fleet-map svg').forEach((svg) => {
+			createTimeline({ loop: true, defaults: { ease: 'inOutQuad' } })
+				.add(svg.querySelector('.packet-a')!, { cx: [140, 250], opacity: [0, 1, 0], duration: 1400 })
+				.add(svg.querySelector('.packet-b')!, { cx: [500, 390], opacity: [0, 1, 0], duration: 1400 }, '-=700')
+				.add(svg.querySelector('.packet-a')!, { cx: [250, 140], opacity: [0, 1, 0], duration: 1400 }, '+=200')
+				.add(svg.querySelector('.packet-b')!, { cx: [390, 500], opacity: [0, 1, 0], duration: 1400 }, '-=700')
+				.add(svg.querySelector('.node-vps rect')!, { strokeWidth: [2, 4, 2], duration: 800 }, 0);
+		});
+	}
+</script>
