@@ -8,6 +8,6 @@ const labels = { tip: 'Tip', gotcha: 'Gotcha', optional: 'Optional' };
 ---
 
 <aside class={`callout callout-${type}`}>
-	<strong class="callout-label">{title ?? labels[type]}</strong>
+	<p class="callout-title">{title ?? labels[type]}</p>
 	<slot />
 </aside>
