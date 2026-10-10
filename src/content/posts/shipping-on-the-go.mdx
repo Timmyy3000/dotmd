@@ -20,6 +20,8 @@ People keep asking me what my setup looks like, so this is the full guide.
 
 My agents don't run on my laptop anymore. They run on a cheap VPS that never sleeps, and I control them from my laptop and my phone. I can start a task at my desk, close the lid, and check on it from my phone while I'm out.
 
+The biggest win for me is coding from my phone on the train. I don't have to pull my laptop out and look like a creep.
+
 <FleetMap />
 
 The setup has seven steps:
@@ -38,7 +40,7 @@ Once your agent has SSH access to the VPS, it can do most of this for you. I poi
 
 [T3 Code](https://github.com/pingdotgg/t3code) is a control surface for coding agents. It doesn't replace Claude Code or Codex. It runs them for you, using the subscriptions you're already logged into, and gives you one app to manage threads, worktrees, and machines.
 
-Download the desktop app from the [GitHub releases page](https://github.com/pingdotgg/t3code/releases). I recommend the **nightly** build (the releases tagged `-nightly`). It moves fast, and the newest features, including a lot of the remote-machine work in this guide, land there first.
+Download the desktop app from the [GitHub releases page](https://github.com/pingdotgg/t3code/releases). I recommend the **nightly** build (the releases tagged `-nightly`). It moves fast, and the newest features, including a lot of the remote-machine work in this guide, land there first. On macOS you can also install it with Homebrew: `brew install --cask t3-code@nightly`.
 
 Before you open it, install at least one agent CLI on your laptop and log in:
 
@@ -241,7 +243,12 @@ The proxy only listens on your tailnet. If Tailscale is off on your laptop, loca
 
 ## 7. Put T3 Code on your phone
 
-Install the T3 Code app for [iOS](https://apps.apple.com/us/app/t3-code-remote-claude-more/id6787819824) or [Android](https://play.google.com/store/apps/details?id=com.t3tools.t3code).
+If you followed my advice and installed the nightly, you need the beta phone app. The App Store and Play Store versions can't connect to nightly builds.
+
+- **iPhone and iPad:** join the [TestFlight beta](https://testflight.apple.com/join/XgaxaRtd).
+- **Android:** join the [beta group](https://groups.google.com/g/t3-code-v2-beta), then open the [Play testing page](https://play.google.com/apps/testing/com.t3tools.t3code) with the same Google account and become a tester.
+
+The nightly desktop app also shows these links as QR codes under **Settings → General → Mobile app**. On the stable build, use the regular [iOS](https://apps.apple.com/us/app/t3-code-remote-claude-more/id6787819824) or [Android](https://play.google.com/store/apps/details?id=com.t3tools.t3code) app.
 
 Connect it the same way as your laptop. With Tailscale, run `t3 pair --tailscale` on the VPS and scan the QR code from **Settings → Environments** in the app. With T3 Connect, sign in. To reach your laptop's local threads from your phone, create a link in **Settings → Connections** on the desktop app.
 
