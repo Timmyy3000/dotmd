@@ -3512,8 +3512,18 @@ a {
 
 .guide-figure .led { fill: var(--accent); }
 
-.guide-figure .fleet-map .link,
-.fleet-map .link {
+.guide-figure .link {
   stroke-dasharray: 2 6;
   stroke-linecap: round;
 }
+
+.guide-figure .route-hidden { fill: none; stroke: none; }
+
+.guide-figure .device-relay path,
+.guide-figure .account .device rect {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.guide-figure .device-relay path { stroke: var(--muted); }
+.guide-figure .account { transition: opacity 200ms; }
