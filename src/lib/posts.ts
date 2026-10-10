@@ -7,7 +7,7 @@ const byDateDescending = (a: PostEntry, b: PostEntry) =>
 
 export async function getPublishedPosts(): Promise<PostEntry[]> {
 	const posts = await getCollection('posts');
-	return posts.filter((post) => !post.data.draft).sort(byDateDescending);
+	return posts.filter((post) => import.meta.env.DEV || !post.data.draft).sort(byDateDescending);
 }
 
 export function formatDate(date: Date): string {

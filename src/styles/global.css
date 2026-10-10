@@ -3127,3 +3127,105 @@ a {
     width: min(22rem, calc(100vw - 1rem));
   }
 }
+
+/* Guide components (MDX posts) */
+.callout {
+  margin: 1.6rem 0;
+  padding: 0.95rem 1.1rem;
+  border: var(--border-width) solid var(--surface-border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: var(--surface-tint);
+  font-size: 0.95rem;
+}
+
+.callout-gotcha {
+  border-left-color: #c0573e;
+}
+
+.callout-optional {
+  border-left-color: var(--muted);
+}
+
+.callout-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.callout > p:first-of-type { margin-top: 0; }
+.callout > p:last-child { margin-bottom: 0; }
+
+.guide-figure {
+  margin: 2rem 0;
+  padding: 1rem;
+  border: var(--border-width) solid var(--surface-border);
+  border-radius: var(--radius-md);
+  background: var(--surface-tint);
+}
+
+.guide-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.guide-figure figcaption {
+  margin-top: 0.7rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.guide-figure text {
+  fill: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  text-anchor: middle;
+}
+
+.guide-figure .node rect:first-child {
+  fill: var(--surface);
+  stroke: var(--surface-border);
+  stroke-width: 2;
+}
+
+.guide-figure .node-vps rect:first-child,
+.guide-figure .node-proxy rect:first-child {
+  stroke: var(--accent);
+}
+
+.guide-figure .node-label { font-weight: 600; font-size: 15px; }
+.guide-figure .node-sub { fill: var(--muted); font-size: 12px; }
+
+.guide-figure .tailnet {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+}
+
+.guide-figure .tailnet-label,
+.guide-figure .route-label {
+  fill: var(--accent);
+  font-size: 12px;
+}
+
+.guide-figure .tailnet-label { text-anchor: start; }
+
+.guide-figure .link {
+  fill: none;
+  stroke: var(--surface-border);
+  stroke-width: 2;
+}
+
+.guide-figure .packet { fill: var(--accent); opacity: 0; }
+.guide-figure .quota-track { fill: var(--bg-strong); }
+.guide-figure .quota-fill { fill: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .guide-figure .packet { display: none; }
+}

@@ -1,0 +1,55 @@
+---
+// Two ways for a client to reach the VPS T3 server: directly over the tailnet, or relayed by T3 Connect.
+---
+
+<figure class="guide-figure connect-routes">
+	<svg viewBox="0 0 640 260" role="img" aria-label="Your laptop reaches the VPS either directly over Tailscale or through the T3 Connect relay">
+		<g class="node" transform="translate(80 130)">
+			<rect x="-62" y="-36" width="124" height="72" rx="12" />
+			<text class="node-label" y="-2">Your T3 app</text>
+			<text class="node-sub" y="20">laptop / phone</text>
+		</g>
+		<g class="node node-vps" transform="translate(560 130)">
+			<rect x="-62" y="-36" width="124" height="72" rx="12" />
+			<text class="node-label" y="-2">VPS T3</text>
+			<text class="node-sub" y="20">t3 serve</text>
+		</g>
+		<g class="node node-relay" transform="translate(320 210)">
+			<rect x="-70" y="-26" width="140" height="52" rx="12" />
+			<text class="node-label" y="6">T3 Connect</text>
+		</g>
+
+		<path class="link route-ts" d="M142 118 C 260 40, 380 40, 498 118" />
+		<text class="route-label" x="320" y="48">Tailscale (direct, private)</text>
+		<path class="link route-cn" d="M142 142 L250 210 M390 210 L498 142" />
+
+		<circle class="packet packet-ts" r="6" />
+		<circle class="packet packet-cn" r="6" />
+	</svg>
+	<figcaption>Pick one route, or both. T3 adds every route it can reach and uses the fastest one that answers.</figcaption>
+</figure>
+
+<script>
+	import { animate, svg } from 'animejs';
+
+	if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		document.querySelectorAll<SVGSVGElement>('.connect-routes svg').forEach((el) => {
+			animate(el.querySelector('.packet-ts')!, {
+				...svg.createMotionPath(el.querySelector<SVGPathElement>('.route-ts')!),
+				opacity: [0, 1, 1, 0],
+				duration: 1800,
+				loop: true,
+				ease: 'inOutSine',
+			});
+			const relay = el.querySelector<SVGCircleElement>('.packet-cn')!;
+			animate(relay, {
+				cx: [142, 250, 390, 498],
+				cy: [142, 210, 210, 142],
+				opacity: [0, 1, 1, 0],
+				duration: 2600,
+				loop: true,
+				ease: 'linear',
+			});
+		});
+	}
+</script>
