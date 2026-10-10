@@ -3382,7 +3382,7 @@ a {
 
 :root[data-theme='t18'] {
   --step: 2rem;
-  --ink-rule: color-mix(in srgb, var(--accent) 24%, transparent);
+  --ink-rule: color-mix(in srgb, var(--accent) 11%, transparent);
   /* rule sits just under the text baseline (~72% down each line box) */
   --lines: repeating-linear-gradient(
     to bottom,
@@ -3485,4 +3485,35 @@ a {
 
 :root[data-theme='t18'] body[data-app-page='feed'] .post-card {
   padding: 1.4rem 0.15rem 1.5rem;
+}
+
+/* Fleet map: line-drawn devices */
+.guide-figure .device rect,
+.guide-figure .device path {
+  fill: var(--surface);
+  stroke: var(--text);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.guide-figure .device-vps rect {
+  stroke: var(--accent);
+}
+
+.guide-figure .halo {
+  fill: var(--accent);
+  stroke: none;
+  opacity: 0.5;
+  fill-opacity: 0.08;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.guide-figure .led { fill: var(--accent); }
+
+.guide-figure .fleet-map .link,
+.fleet-map .link {
+  stroke-dasharray: 2 6;
+  stroke-linecap: round;
 }
