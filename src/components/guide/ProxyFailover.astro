@@ -3,75 +3,88 @@
 ---
 
 <figure class="guide-figure proxy-failover">
-	<svg viewBox="0 0 640 280" role="img" aria-label="Requests from Claude Code and Codex go through CLI Proxy, which switches to a second account when the first one hits its limit">
-		<g class="node" transform="translate(80 140)">
-			<rect x="-66" y="-46" width="132" height="92" rx="12" />
-			<text class="node-label" y="-12">Claude Code</text>
-			<text class="node-label" y="10">Codex</text>
-			<text class="node-sub" y="32">laptop + VPS</text>
+	<svg viewBox="0 0 640 300" role="img" aria-label="Claude Code and Codex send requests through CLI Proxy, which switches to a second account when the first one hits its limit">
+		<path class="link" id="pf-t1" d="M158 110 C 205 110, 215 150, 262 150" />
+		<path class="link" id="pf-t2" d="M158 190 C 205 190, 215 150, 262 150" />
+		<path class="link" id="pf-a" d="M378 150 C 420 150, 430 90, 470 90" />
+		<path class="link" id="pf-b" d="M378 150 C 420 150, 430 210, 470 210" />
+
+		<g class="device" transform="translate(95 110)">
+			<rect x="-52" y="-22" width="112" height="44" rx="6" />
+			<path d="M-38 -6 l8 6 l-8 6 M-24 6 H-12" />
+			<text class="node-label" x="2" y="5" style="text-anchor:start">Claude</text>
 		</g>
-		<g class="node node-proxy" transform="translate(320 140)">
-			<rect x="-70" y="-36" width="140" height="72" rx="14" />
-			<text class="node-label" y="-2">CLI Proxy</text>
-			<text class="node-sub" y="20">one endpoint</text>
+		<g class="device" transform="translate(95 190)">
+			<rect x="-52" y="-22" width="112" height="44" rx="6" />
+			<path d="M-38 -6 l8 6 l-8 6 M-24 6 H-12" />
+			<text class="node-label" x="2" y="5" style="text-anchor:start">Codex</text>
 		</g>
-		<g class="node account account-a" transform="translate(545 75)">
-			<rect x="-75" y="-44" width="150" height="88" rx="12" />
-			<text class="node-label" y="-14">Account A</text>
-			<rect class="quota-track" x="-55" y="2" width="110" height="10" rx="5" />
-			<rect class="quota-fill" x="-55" y="2" width="20" height="10" rx="5" />
-			<text class="node-sub status" y="32">ok</text>
-		</g>
-		<g class="node account account-b" transform="translate(545 205)">
-			<rect x="-75" y="-44" width="150" height="88" rx="12" />
-			<text class="node-label" y="-14">Account B</text>
-			<rect class="quota-track" x="-55" y="2" width="110" height="10" rx="5" />
-			<rect class="quota-fill" x="-55" y="2" width="20" height="10" rx="5" />
-			<text class="node-sub status" y="32">standby</text>
+		<text class="node-sub" x="95" y="250">your tools</text>
+
+		<g class="device device-vps" transform="translate(320 150)">
+			<circle class="halo" r="62" />
+			<rect x="-46" y="-30" width="92" height="60" rx="14" />
+			<path d="M-24 -10 H-4 C 6 -10, 6 10, 16 10 H24 M-24 10 H-4 C 6 10, 6 -10, 16 -10 H24" />
+			<text class="node-label" y="58">CLI Proxy</text>
+			<text class="node-sub" y="76">one endpoint</text>
 		</g>
 
-		<line class="link" x1="146" y1="140" x2="250" y2="140" />
-		<path class="link route-a" d="M390 140 L470 75" />
-		<path class="link route-b" d="M390 140 L470 205" />
+		<g class="account account-a" transform="translate(540 90)">
+			<g class="device">
+				<rect x="-70" y="-34" width="140" height="68" rx="10" />
+			</g>
+			<text class="node-label" y="-8">Account A</text>
+			<rect class="quota-track" x="-50" y="4" width="100" height="6" rx="3" />
+			<rect class="quota-fill" x="-50" y="4" width="20" height="6" rx="3" />
+			<text class="node-sub status" y="26">in use</text>
+		</g>
+		<g class="account account-b" transform="translate(540 210)">
+			<g class="device">
+				<rect x="-70" y="-34" width="140" height="68" rx="10" />
+			</g>
+			<text class="node-label" y="-8">Account B</text>
+			<rect class="quota-track" x="-50" y="4" width="100" height="6" rx="3" />
+			<rect class="quota-fill" x="-50" y="4" width="12" height="6" rx="3" />
+			<text class="node-sub status" y="26">standby</text>
+		</g>
 
-		<circle class="packet" r="6" cx="146" cy="140" />
+		<circle class="packet" r="5" />
 	</svg>
 	<figcaption>When Account A hits its limit, the proxy cools it down and sends the next request to Account B. Your tools never notice.</figcaption>
 </figure>
 
 <script>
-	import { createTimeline } from 'animejs';
+	import { createTimeline, svg } from 'animejs';
 
 	if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-		document.querySelectorAll<SVGSVGElement>('.proxy-failover svg').forEach((svg) => {
-			const $ = (s: string) => svg.querySelector(s)!;
+		document.querySelectorAll<SVGSVGElement>('.proxy-failover svg').forEach((el) => {
+			const $ = <T extends Element = SVGElement>(s: string) => el.querySelector<T>(s)!;
 			const packet = $('.packet');
-			const send = (tl: ReturnType<typeof createTimeline>, toY: number) =>
-				tl
-					.add(packet, { cx: [146, 390], cy: [140, 140], opacity: [0, 1], duration: 700 })
-					.add(packet, { cx: [390, 470], cy: [140, toY], opacity: [1, 0], duration: 500 });
+			const path = (id: string) => svg.createMotionPath($<SVGPathElement>(id));
+			const status = (acct: string, text: string) => () => ($(`.account-${acct} .status`).textContent = text);
+			const tl = createTimeline({ loop: true, loopDelay: 800, defaults: { ease: 'inOutSine' } });
 
-			const tl = createTimeline({ loop: true, loopDelay: 600, defaults: { ease: 'inOutQuad' } });
-			for (const w of [50, 80]) {
-				send(tl, 75);
-				tl.add($('.account-a .quota-fill'), { width: w, duration: 300 });
-			}
-			send(tl, 75);
-			tl.add($('.account-a .quota-fill'), { width: 110, duration: 300 })
-				.add($('.account-a'), { opacity: [1, 0.45], duration: 300 })
-				.add($('.account-a .status'), { opacity: [1, 0, 1], duration: 300, onBegin: () => ($('.account-a .status').textContent = 'limit hit · cooling down') }, '<<')
-				.add($('.account-b .status'), { opacity: [1, 0, 1], duration: 300, onBegin: () => ($('.account-b .status').textContent = 'serving') });
-			for (const w of [40, 60]) {
-				send(tl, 205);
-				tl.add($('.account-b .quota-fill'), { width: w, duration: 300 });
-			}
+			const send = (from: string, to: 'a' | 'b', width: number) =>
+				tl
+					.add(packet, { ...path(from), opacity: [0, 1], duration: 650 })
+					.add($('.halo'), { scale: [1, 1.1, 1], duration: 400 })
+					.add(packet, { ...path(`#pf-${to}`), opacity: [1, 0], duration: 650 })
+					.add($(`.account-${to} .quota-fill`), { width, duration: 350 });
+
+			send('#pf-t1', 'a', 50);
+			send('#pf-t2', 'a', 78);
+			send('#pf-t1', 'a', 100);
+			tl.add($('.account-a'), { opacity: [1, 0.4], duration: 350, onBegin: status('a', 'limit hit, cooling down') })
+				.add($('.account-b .status'), { opacity: [0, 1], duration: 300, onBegin: status('b', 'in use') });
+			send('#pf-t2', 'b', 30);
+			send('#pf-t1', 'b', 48);
 			tl.add([$('.account-a .quota-fill'), $('.account-b .quota-fill')], {
-				width: 20,
-				duration: 400,
-				delay: 800,
+				width: (_: unknown, i: number) => (i ? 12 : 20),
+				duration: 500,
+				delay: 900,
 				onComplete: () => {
-					$('.account-a .status').textContent = 'ok';
-					$('.account-b .status').textContent = 'standby';
+					status('a', 'in use')();
+					status('b', 'standby')();
 				},
 			}).add($('.account-a'), { opacity: 1, duration: 300 }, '<<');
 		});

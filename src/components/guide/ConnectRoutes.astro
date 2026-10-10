@@ -3,53 +3,53 @@
 ---
 
 <figure class="guide-figure connect-routes">
-	<svg viewBox="0 0 640 260" role="img" aria-label="Your laptop reaches the VPS either directly over Tailscale or through the T3 Connect relay">
-		<g class="node" transform="translate(80 130)">
-			<rect x="-62" y="-36" width="124" height="72" rx="12" />
-			<text class="node-label" y="-2">Your T3 app</text>
-			<text class="node-sub" y="20">laptop / phone</text>
-		</g>
-		<g class="node node-vps" transform="translate(560 130)">
-			<rect x="-62" y="-36" width="124" height="72" rx="12" />
-			<text class="node-label" y="-2">VPS T3</text>
-			<text class="node-sub" y="20">t3 serve</text>
-		</g>
-		<g class="node node-relay" transform="translate(320 210)">
-			<rect x="-70" y="-26" width="140" height="52" rx="12" />
-			<text class="node-label" y="6">T3 Connect</text>
+	<svg viewBox="0 0 640 300" role="img" aria-label="Your laptop and phone reach the VPS either directly over Tailscale or through the T3 Connect relay">
+		<path class="link" id="cr-ts" d="M170 130 C 260 50, 380 50, 470 130" />
+		<path class="link" id="cr-cn" d="M170 170 C 220 230, 260 238, 290 238 M350 238 C 380 238, 420 230, 470 170" />
+		<path class="route-hidden" id="cr-cn-full" d="M170 170 C 220 230, 260 238, 290 238 L350 238 C 380 238, 420 230, 470 170" />
+
+		<text class="route-label" x="320" y="58">Tailscale: direct, private</text>
+
+		<g class="device" transform="translate(110 150)">
+			<rect x="-46" y="-26" width="58" height="38" rx="4" />
+			<path d="M-56 18 H22 L17 24 H-51 Z" />
+			<rect x="26" y="-22" width="24" height="44" rx="5" />
+			<text class="node-label" y="56">Your T3 apps</text>
 		</g>
 
-		<path class="link route-ts" d="M142 118 C 260 40, 380 40, 498 118" />
-		<text class="route-label" x="320" y="48">Tailscale (direct, private)</text>
-		<path class="link route-cn" d="M142 142 L250 210 M390 210 L498 142" />
+		<g class="device device-relay" transform="translate(320 238)">
+			<path d="M-22 10 H22 C 32 10, 34 -6, 22 -8 C 22 -22, 2 -26, -4 -14 C -14 -22, -28 -14, -24 -4 C -34 -2, -32 10, -22 10 Z" />
+			<text class="node-sub" y="34">T3 Connect relay</text>
+		</g>
 
-		<circle class="packet packet-ts" r="6" />
-		<circle class="packet packet-cn" r="6" />
+		<g class="device device-vps" transform="translate(530 150)">
+			<circle class="halo" r="56" />
+			<rect x="-30" y="-34" width="60" height="18" rx="4" />
+			<rect x="-30" y="-9" width="60" height="18" rx="4" />
+			<rect x="-30" y="16" width="60" height="18" rx="4" />
+			<circle class="led" cx="-19" cy="-25" r="2.5" />
+			<circle class="led" cx="-19" cy="0" r="2.5" />
+			<circle class="led" cx="-19" cy="25" r="2.5" />
+			<text class="node-label" y="62">VPS</text>
+		</g>
+
+		<circle class="packet packet-ts" r="5" />
+		<circle class="packet packet-cn" r="5" />
 	</svg>
 	<figcaption>Pick one route, or both. T3 adds every route it can reach and uses the fastest one that answers.</figcaption>
 </figure>
 
 <script>
-	import { animate, svg } from 'animejs';
+	import { createTimeline, svg } from 'animejs';
 
 	if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		document.querySelectorAll<SVGSVGElement>('.connect-routes svg').forEach((el) => {
-			animate(el.querySelector('.packet-ts')!, {
-				...svg.createMotionPath(el.querySelector<SVGPathElement>('.route-ts')!),
-				opacity: [0, 1, 1, 0],
-				duration: 1800,
-				loop: true,
-				ease: 'inOutSine',
-			});
-			const relay = el.querySelector<SVGCircleElement>('.packet-cn')!;
-			animate(relay, {
-				cx: [142, 250, 390, 498],
-				cy: [142, 210, 210, 142],
-				opacity: [0, 1, 1, 0],
-				duration: 2600,
-				loop: true,
-				ease: 'linear',
-			});
+			const $ = <T extends Element = SVGElement>(s: string) => el.querySelector<T>(s)!;
+			createTimeline({ loop: true, loopDelay: 700, defaults: { ease: 'inOutSine' } })
+				.add($('.packet-ts'), { ...svg.createMotionPath($<SVGPathElement>('#cr-ts')), opacity: [0, 1, 1, 0], duration: 1400 })
+				.add($('.packet-cn'), { ...svg.createMotionPath($<SVGPathElement>('#cr-cn-full')), opacity: [0, 1, 1, 0], duration: 2200 }, '-=900')
+				.add($('.device-relay path'), { scale: [1, 1.08, 1], duration: 500 }, '-=1300')
+				.add($('.halo'), { scale: [1, 1.1, 1], duration: 500 });
 		});
 	}
 </script>
